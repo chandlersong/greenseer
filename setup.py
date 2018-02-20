@@ -13,6 +13,7 @@ intall_requires = [
 setup(
     name='greenseer',
     packages=['greenseer'],
+    package_dir = {'greenseer': 'src'},
     version='0.1',
     license='apache2',
     author='Chandler Song',

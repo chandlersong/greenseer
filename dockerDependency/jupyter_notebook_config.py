@@ -199,7 +199,7 @@ c.NotebookApp.ip = '*'
 #c.NotebookApp.nbserver_extensions = {}
 
 ## The directory to use for notebooks and kernels.
-c.NotebookApp.notebook_dir = '/opt/hodor/notebook'
+c.NotebookApp.notebook_dir = '/opt/greenseer/notebook'
 
 ## Whether to open in a browser after starting. The specific browser used is
 #  platform dependent and determined by the python standard library `webbrowser`
