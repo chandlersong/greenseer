@@ -26,8 +26,11 @@ RUN apt-get install -y gcc make&& \
 #others  
 RUN  pip install --no-cache-dir lxml bs4 requests requests-file pandas_datareader&& \
      pip install --no-cache-dir tushare && \
-     pip install --no-cache-dir ta-lib 
+     pip install --no-cache-dir ta-lib && \
+     chmod -R 777 /opt/conda/lib/python3.6 && \
+     chmod -R 777 /opt/conda/bin
 
+ 
 
 LABEL io.k8s.description="Greenseer imagine" \
     io.k8s.display-name="Greenseer imagine" \
@@ -46,7 +49,7 @@ RUN mkdir -p  $GREENSEER_HOME && \
     chmod -R 777 $GREENSEER_HOME && \
     mkdir -p /.local && \
     chown 10001:10001 /.local  && \
-    chmod -R 777 /.local
+    chmod -R 777 /.local 
     
 COPY ./dockerDependency/jupyter_notebook_config.py $GREENSEER_HOME
 COPY ./dockerDependency/s2i/bin/ /usr/libexec/s2i
