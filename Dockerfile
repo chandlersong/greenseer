@@ -26,9 +26,7 @@ RUN apt-get install -y gcc make&& \
 #others  
 RUN  pip install --no-cache-dir lxml bs4 requests requests-file pandas_datareader&& \
      pip install --no-cache-dir tushare && \
-     pip install --no-cache-dir ta-lib && \
-     chmod -R 777 /opt/conda/lib/python3.6 && \
-     chmod -R 777 /opt/conda/bin
+     pip install --no-cache-dir ta-lib 
 
  
 
@@ -54,6 +52,7 @@ RUN mkdir -p  $GREENSEER_HOME && \
 COPY ./dockerDependency/jupyter_notebook_config.py $GREENSEER_HOME
 COPY ./dockerDependency/s2i/bin/ /usr/libexec/s2i
 
+RUN pip install path.py
 
 USER 10001
 ENV JUPYTER_CONFIG_DIR /opt/greenseer/jupyter
