@@ -1,0 +1,7 @@
+/.idea
+/build
+/dist
+/hodor.egg-info
+/chandlersong
+.ipynb_checkpoints
+__pycache__

@@ -1,0 +1,4 @@
+#! /bin/bash -e
+
+cp -R /tmp/src/notebook  $GREENSEER_HOME
+chmod 777 -R $GREENSEER_HOME/notebook
