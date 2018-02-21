@@ -51,9 +51,8 @@ RUN mkdir -p  $GREENSEER_HOME && \
     
 COPY ./dockerDependency/jupyter_notebook_config.py $GREENSEER_HOME
 COPY ./dockerDependency/s2i/bin/ /usr/libexec/s2i
-
-RUN pip install path.py
-
-USER 10001
 ENV JUPYTER_CONFIG_DIR /opt/greenseer/jupyter
-ENV JUPYTER_PATH /opt/greenseer/juypterShare
+# ENV PYTHONPATH=/.local/lib/python3.6/site-packages:/.local/lib/python3.6/site-packages/greenseer-0.1-py3.6.egg:$PYTHONPATH
+USER 10001
+
+
