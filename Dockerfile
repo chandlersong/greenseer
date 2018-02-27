@@ -52,7 +52,9 @@ RUN mkdir -p  $GREENSEER_HOME && \
 COPY ./dockerDependency/jupyter_notebook_config.py $GREENSEER_HOME
 COPY ./dockerDependency/s2i/bin/ /usr/libexec/s2i
 ENV JUPYTER_CONFIG_DIR /opt/greenseer/jupyter
-# ENV PYTHONPATH=/.local/lib/python3.6/site-packages:/.local/lib/python3.6/site-packages/greenseer-0.1-py3.6.egg:$PYTHONPATH
+
+RUN pip install --no-cache-dir jupyterlab
+
 USER 10001
 
 
