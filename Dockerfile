@@ -1,6 +1,8 @@
 FROM continuumio/anaconda3:latest
 LABEL maintainer="chandler <chandler605@outlook.com>"
 
+LABEL REFRESH_AT 2018_02_27
+
 ENV  PIP_CONFIG_FILE /etc/pip.conf
 
 COPY ./dockerDependency/chinaSources/sources.list /etc/apt/
@@ -9,6 +11,7 @@ COPY ./dockerDependency/chinaSources/pip.conf /etc/
 RUN apt-get update && \
     apt-get upgrade -y
     
+   
 # install dependency
 # TA-Lib
 RUN apt-get install -y gcc make&& \ 
@@ -24,9 +27,15 @@ RUN apt-get install -y gcc make&& \
 
   
 #others  
-RUN  pip install --no-cache-dir lxml bs4 requests requests-file pandas_datareader&& \
+RUN  conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
+     conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/  && \
+     conda config --set show_channel_urls yes && \
+     conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
+     conda install -y jupyterlab && \
+     pip install --no-cache-dir lxml bs4 requests requests-file pandas_datareader&& \
      pip install --no-cache-dir tushare && \
      pip install --no-cache-dir ta-lib 
+     
 
  
 
@@ -53,7 +62,6 @@ COPY ./dockerDependency/jupyter_notebook_config.py $GREENSEER_HOME
 COPY ./dockerDependency/s2i/bin/ /usr/libexec/s2i
 ENV JUPYTER_CONFIG_DIR /opt/greenseer/jupyter
 
-RUN pip install --no-cache-dir jupyterlab
 
 USER 10001
 

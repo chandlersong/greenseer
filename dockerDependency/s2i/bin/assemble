@@ -1,9 +1,7 @@
 #! /bin/bash -e
 
-ls /tmp/src
 cp -R /tmp/src/jupyter  $GREENSEER_HOME
-chmod 777 -R $GREENSEER_HOME/juypter
-
+chmod 777 -R $GREENSEER_HOME/jupyter
 cd /tmp/src
 python setup.py install --user
 
