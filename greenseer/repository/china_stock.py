@@ -35,7 +35,7 @@ class DailyPriceRepository(BaseRepository):
         return result
 
     def random_fetch_days(self):
-        result = self.__remote_fetch_days + randint(0, 365)
+        result = self.__remote_fetch_days + randint(0, 35)
         self.logger.info("generate remote fetch {} days".format(result))
         return timedelta(days=result)
 
@@ -155,6 +155,6 @@ def create_daily_price_repository(remote_source=None, local_source: LocalSource 
         remote_source = ts.get_h_data
 
     if local_source is None:
-        local_source = FolderSource(tempfile.gettempdir() + "/greenseer")
+        local_source = FolderSource(tempfile.gettempdir() + "/greenseer/china_stock_price_daily")
 
     return DailyPriceRepository(local_source, remote_source)

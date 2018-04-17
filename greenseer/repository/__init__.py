@@ -167,7 +167,7 @@ class FolderSource(LocalSource):
         try:
             return pd.read_csv(self.file_format.format(stock_id), index_col=0, compression="gzip", parse_dates=True)
         except FileNotFoundError:
-            self.logger.error("{} not exists, return empty".format(stock_id))
+            self.logger.error("{} not exists in local".format(stock_id))
             return pd.DataFrame()
 
     def initial_data(self, stock_id, df: DataFrame):
