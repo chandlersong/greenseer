@@ -17,7 +17,7 @@ with open('LICENSE') as f:
 
 setup(
     name='greenseer',
-    packages =find_packages(exclude=['tests','tests.*']),
+    packages =find_packages(exclude=['tests','tests.*','demo','demo.*']),
     version='0.1',
     license=license,
     author='Chandler Song',

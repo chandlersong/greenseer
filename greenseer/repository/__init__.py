@@ -39,6 +39,61 @@ def change_index_to_str(func):
     return format_index
 
 
+class LocalSource:
+    """
+    this is a interface. Because I am familiar with interface in java. I use a stupid solution here.
+    need to be changed if there's a good solution
+    """
+
+    @abc.abstractmethod
+    def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
+        """
+        load data from repository
+        :param stock_id:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    def initial_data(self, stock_id, df: DataFrame, *args, **kwargs):
+        """
+        initial data, there should be no data before
+        :param stock_id:
+        :param df:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    def append_data(self, stock_id, new_df: DataFrame, *args, **kwargs):
+        """
+        add new data to the tail
+        :param stock_id:
+        :param df:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        pass
+
+    @abc.abstractmethod
+    def refresh_data(self, stock_id, df: DataFrame, *args, **kwargs):
+        """
+        refresh data, this method will clean up all the old data
+        if you want to keep old data, please use append_data
+        :param stock_id:
+        :param df:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        pass
+
+
 class BaseRepository:
     '''
     all the DataSource should be responsibility for one kind of data. like store price.
@@ -64,99 +119,15 @@ class BaseRepository:
         self.__remote_source = remote_source
 
     @property
-    def local_source(self):
+    def local_source(self) -> LocalSource:
         return self.__local_source
 
     @property
     def remote_source(self):
         return self.__remote_source
 
-    def load_data(self, stock_id, force_local=False, *args, **kwargs):
-        """
-
-        """
-        if not force_local:
-            if self.need_initial(stock_id, *args, **kwargs):
-                '''
-                if data is dirty, return new data and update local database
-               '''
-                self.logger.debug('data is dirty, refresh data,*args:%s,**kwargs:%s' % (args, kwargs))
-                self.__local_source.initial_data(self.fetch_initial_data(stock_id, *args, **kwargs), *args, **kwargs)
-            else:
-                self.logger.debug('data is clean, start to update,*args:%s,**kwargs:%s' % (args, kwargs))
-                self.update_data(stock_id, *args, **kwargs)
-
-        return self.__local_source.load_data(stock_id, dtype=self.get_dtype(), *args, **kwargs)
-
-    def need_initial(self, stock_id, *args, **kwargs):
-        """
-        check need to do initial or not
-        :return: need to do the initial or not
-        """
-        pass
-
-    def fetch_initial_data(self, stock_id, *args, **kwargs):
-        pass
-
-    def update_data(self, stock_id, *args, **kwargs):
-        pass
-
-    def get_dtype(self):
-        pass
-
-
-class LocalSource:
-    """
-    this is a interface. Because I am familiar with interface in java. I use a stupid solution here.
-    need to be changed if there's a good solution
-    """
-
     @abc.abstractmethod
-    def load_data(self, stock_id, *args, **kwargs):
-        """
-        load data from repository
-        :param stock_id:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        pass
-
-    @abc.abstractmethod
-    def initial_data(self, stock_id, df:DataFrame, *args, **kwargs):
-        """
-        initial data, there should be no data before
-        :param stock_id:
-        :param df:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        pass
-
-    @abc.abstractmethod
-    def append_data(self, stock_id, new_df:DataFrame, *args, **kwargs):
-        """
-        add new data to the tail
-        :param stock_id:
-        :param df:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        pass
-
-    @abc.abstractmethod
-    def refresh_data(self, stock_id, df:DataFrame, *args, **kwargs):
-        """
-        refresh data, this method will clean up all the old data
-        if you want to keep old data, please use append_data
-        :param stock_id:
-        :param df:
-        :param args:
-        :param kwargs:
-        :return:
-        """
+    def load_data(self, stock_id, force_local=False, *args, **kwargs) -> DataFrame:
         pass
 
 
@@ -174,20 +145,20 @@ class FolderSource(LocalSource):
             self.logger.info('%s not exists,auto create!!!' % (self.__source_folder))
             os.makedirs(self.__source_folder, exist_ok=True)
         else:
-            self.logger.info('%s exists' % (self.__source_folder))
+            self.logger.info('%s exists' % self.__source_folder)
         self.file_format = source_folder + "/{}.tar.gz"
 
     @property
     def source_folder(self):
         return self.__source_folder
 
-    def refresh_data(self, stock_id, df:DataFrame, *args, **kwargs):
+    def refresh_data(self, stock_id, df: DataFrame, *args, **kwargs):
         file_path = self.file_format.format(stock_id)
         if os.path.exists(file_path):
             self.logger.info("{} exists and has been deleted".format(file_path))
             os.remove(file_path)
 
-        df.to_csv(file_path, compression="gzip")
+        df.sort_index().to_csv(file_path, compression="gzip")
 
     def append_data(self, stock_id, new_df: DataFrame, *args, **kwargs):
         self.refresh_data(stock_id, self.load_data(stock_id).append(new_df))
@@ -202,8 +173,3 @@ class FolderSource(LocalSource):
     def initial_data(self, stock_id, df: DataFrame):
         file_path = self.file_format.format(stock_id)
         df.to_csv(file_path, compression="gzip")
-
-
-class InitialTool:
-    def initial(self, *args, **kwargs):
-        pass
