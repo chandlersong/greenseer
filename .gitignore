@@ -7,3 +7,5 @@
 __pycache__
 /greenseer.egg-info
 /logs/greenseer.log
+greenseer/config.properties
+/jupyter/config.properties

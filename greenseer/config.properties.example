@@ -1,0 +1,6 @@
+[DataBase]
+db_link=postgresql://postgres:postgres@192.168.0.107:5432/JsonTest
+
+[Log]
+log_file=../logs/hodor.log
+log_format=%(asctime)s - %(name)s - %(levelname)s - %(message)s

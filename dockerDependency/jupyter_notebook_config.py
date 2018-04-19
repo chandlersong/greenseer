@@ -49,7 +49,7 @@
 
 ## Use a regular expression for the Access-Control-Allow-Origin header
 #  
-#  Requests from an origin matching the expression will get replies with:
+#  Requests from an origin matching the expression will get_str replies with:
 #  
 #      Access-Control-Allow-Origin: origin
 #  
