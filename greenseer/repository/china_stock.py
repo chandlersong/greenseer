@@ -9,6 +9,7 @@ import pandas as pd
 import tushare as ts
 from pandas import DataFrame
 
+from greenseer.configuration import get_global_configuration
 from greenseer.repository import BaseRepository, LocalSource, FolderSource
 
 TU_SHARE_SINA_DAILY = {'amount': np.float64, 'volume': np.float64}
@@ -20,22 +21,29 @@ class DailyPriceRepository(BaseRepository):
     ONE_DAY = timedelta(days=1)
     DEFAULT_DATE_FORMAT = '%Y-%m-%d'
 
-    def __init__(self, local_source, remote_source, sleep_seconds=10, remote_fetch_days=365):
+    def __init__(self, local_source, remote_source, sleep_seconds=10, max_random_sleep_seconds=20,
+                 remote_fetch_days=365, max_random_remote_fetch_days=35):
         BaseRepository.__init__(self, local_source, remote_source)
 
         self.__sleep_seconds = sleep_seconds
         self.__remote_fetch_days = remote_fetch_days
+        self.__max_random_sleep_seconds = max_random_sleep_seconds
+        self.__max_random_remote_fetch_days = max_random_remote_fetch_days
 
+        self.logger.info("sleep_seconds is {}".format(self.__sleep_seconds))
+        self.logger.info("max_random_sleep_seconds is {}".format(self.__max_random_sleep_seconds))
+        self.logger.info("remote_fetch_days is {}".format(self.__remote_fetch_days))
+        self.logger.info("max_random_remote_fetch_days is {}".format(self.__max_random_remote_fetch_days))
         self.logger.info("local source type is {}".format(type(local_source)))
         self.logger.info("remote source type is {}".format(remote_source.__name__))
 
     def random_sleep_seconds(self):
-        result = self.__sleep_seconds + randint(0, 20)
+        result = self.__sleep_seconds + randint(0, self.__max_random_sleep_seconds)
         self.logger.debug("generate sleep {} seconds".format(result))
         return result
 
     def random_fetch_days(self):
-        result = self.__remote_fetch_days + randint(0, 35)
+        result = self.__remote_fetch_days + randint(0, self.__max_random_remote_fetch_days)
         self.logger.info("generate remote fetch {} days".format(result))
         return timedelta(days=result)
 
@@ -156,5 +164,12 @@ def create_daily_price_repository(remote_source=None, local_source: LocalSource 
 
     if local_source is None:
         local_source = FolderSource(tempfile.gettempdir() + "/greenseer/china_stock_price_daily")
-
-    return DailyPriceRepository(local_source, remote_source)
+    global_config = get_global_configuration()
+    return DailyPriceRepository(local_source,
+                                remote_source,
+                                sleep_seconds=global_config.get_str("china_stock_config", "sleep_seconds", 10),
+                                max_random_sleep_seconds=global_config.get_str("china_stock_config",
+                                                                               "max_random_sleep_seconds", 20),
+                                remote_fetch_days=global_config.get_str("china_stock_config", "remote_fetch_days", 365),
+                                max_random_remote_fetch_days=global_config.get_str("china_stock_config",
+                                                                                   "max_random_remote_fetch_days", 35))

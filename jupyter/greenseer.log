@@ -1,0 +1,14 @@
+2018-04-19 23:23:52,537 - root - INFO - __init__ : 145 - /tmp/greenseer/china_stock_price_daily not exists,auto create!!!
+2018-04-19 23:23:52,539 - root - INFO - china_stock : 33 - sleep_seconds is 10
+2018-04-19 23:23:52,540 - root - INFO - china_stock : 34 - remote_fetch_days is 365
+2018-04-19 23:23:52,541 - root - INFO - china_stock : 35 - max_random_sleep_seconds is 20 # max is sleep_seconds + sleep_seconds
+2018-04-19 23:23:52,543 - root - INFO - china_stock : 36 - max_random_remote_fetch_days is 35 # max is remote_fetch_days + max_random_remote_fetch_days
+2018-04-19 23:23:52,544 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
+2018-04-19 23:23:52,546 - root - INFO - china_stock : 38 - remote source type is get_h_data
+2018-04-19 23:24:48,548 - root - INFO - __init__ : 148 - /tmp/greenseer/china_stock_price_daily exists
+2018-04-19 23:24:48,549 - root - INFO - china_stock : 33 - sleep_seconds is 10
+2018-04-19 23:24:48,550 - root - INFO - china_stock : 34 - remote_fetch_days is 365
+2018-04-19 23:24:48,551 - root - INFO - china_stock : 35 - max_random_sleep_seconds is 20
+2018-04-19 23:24:48,553 - root - INFO - china_stock : 36 - max_random_remote_fetch_days is 35
+2018-04-19 23:24:48,554 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
+2018-04-19 23:24:48,555 - root - INFO - china_stock : 38 - remote source type is get_h_data
