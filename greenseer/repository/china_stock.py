@@ -167,9 +167,9 @@ def create_daily_price_repository(remote_source=None, local_source: LocalSource 
     global_config = get_global_configuration()
     return DailyPriceRepository(local_source,
                                 remote_source,
-                                sleep_seconds=global_config.get_str("china_stock_config", "sleep_seconds", 10),
-                                max_random_sleep_seconds=global_config.get_str("china_stock_config",
+                                sleep_seconds=global_config.get_int_value("china_stock_config", "sleep_seconds", 10),
+                                max_random_sleep_seconds=global_config.get_int_value("china_stock_config",
                                                                                "max_random_sleep_seconds", 20),
-                                remote_fetch_days=global_config.get_str("china_stock_config", "remote_fetch_days", 365),
-                                max_random_remote_fetch_days=global_config.get_str("china_stock_config",
+                                remote_fetch_days=global_config.get_int_value("china_stock_config", "remote_fetch_days", 365),
+                                max_random_remote_fetch_days=global_config.get_int_value("china_stock_config",
                                                                                    "max_random_remote_fetch_days", 35))
