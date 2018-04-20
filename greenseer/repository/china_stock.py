@@ -30,10 +30,10 @@ class DailyPriceRepository(BaseRepository):
         self.__max_random_sleep_seconds = max_random_sleep_seconds
         self.__max_random_remote_fetch_days = max_random_remote_fetch_days
 
-        self.logger.info("sleep_seconds is {}".format(self.__sleep_seconds))
-        self.logger.info("max_random_sleep_seconds is {}".format(self.__max_random_sleep_seconds))
-        self.logger.info("remote_fetch_days is {}".format(self.__remote_fetch_days))
-        self.logger.info("max_random_remote_fetch_days is {}".format(self.__max_random_remote_fetch_days))
+        self.logger.info("sleep seconds is between {} to {}".format(self.__sleep_seconds,
+                                                                    self.__sleep_seconds + self.__max_random_sleep_seconds))
+        self.logger.info("fetch days is between  {} to {} ".format(self.__remote_fetch_days,
+                                                                   self.__remote_fetch_days + self.__max_random_remote_fetch_days))
         self.logger.info("local source type is {}".format(type(local_source)))
         self.logger.info("remote source type is {}".format(remote_source.__name__))
 
@@ -44,7 +44,7 @@ class DailyPriceRepository(BaseRepository):
 
     def random_fetch_days(self):
         result = self.__remote_fetch_days + randint(0, self.__max_random_remote_fetch_days)
-        self.logger.info("generate remote fetch {} days".format(result))
+        self.logger.debug("generate remote fetch {} days".format(result))
         return timedelta(days=result)
 
     def load_data(self, stock_id, force_local=False) -> DataFrame:
@@ -109,10 +109,9 @@ class DailyPriceRepository(BaseRepository):
 
                 if df is not None and not df.empty:
                     result.append(df)
-                    self.logger.info("load prices,records size{}".format(df.shape))
 
                     self.logger.info(
-                        "load prices:from {} to {},records:{}".format(period_start_date, period_end_date, df.shape))
+                        "load prices:from {} to {},records shape:{}".format(period_start_date, period_end_date, df.shape))
                 period_start_date = period_end_date + DailyPriceRepository.ONE_DAY
                 # avoid be block
                 time.sleep(self.random_sleep_seconds())
@@ -125,7 +124,7 @@ class DailyPriceRepository(BaseRepository):
 
         self.logger.info("finish fetch stock prices: %s" % stock_id)
         if result:  # result is not empty
-            return pd.concat(result)
+            return pd.concat(result).sort_index()
         else:
             return pd.DataFrame()
 
@@ -149,8 +148,9 @@ class DailyPriceRepository(BaseRepository):
         next_day = self.find_update_date(local_data)
 
         if next_day is None:
+            self.logger.info("no need to append")
             return
-
+        self.logger.info("last day is {}".format(next_day))
         self.local_source.append_data(stock_id, self.remote_source(stock_id,
                                                                    start=next_day.strftime(
                                                                        DailyPriceRepository.DEFAULT_DATE_FORMAT),
@@ -169,7 +169,9 @@ def create_daily_price_repository(remote_source=None, local_source: LocalSource 
                                 remote_source,
                                 sleep_seconds=global_config.get_int_value("china_stock_config", "sleep_seconds", 10),
                                 max_random_sleep_seconds=global_config.get_int_value("china_stock_config",
-                                                                               "max_random_sleep_seconds", 20),
-                                remote_fetch_days=global_config.get_int_value("china_stock_config", "remote_fetch_days", 365),
+                                                                                     "max_random_sleep_seconds", 20),
+                                remote_fetch_days=global_config.get_int_value("china_stock_config", "remote_fetch_days",
+                                                                              365),
                                 max_random_remote_fetch_days=global_config.get_int_value("china_stock_config",
-                                                                                   "max_random_remote_fetch_days", 35))
+                                                                                         "max_random_remote_fetch_days",
+                                                                                         35))

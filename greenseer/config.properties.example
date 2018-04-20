@@ -1,6 +1,5 @@
-[DataBase]
-db_link=postgresql://postgres:postgres@192.168.0.107:5432/JsonTest
-
-[Log]
-log_file=../logs/hodor.log
-log_format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+[china_stock_config]
+remote_fetch_days=365
+max_random_remote_fetch_days=35 # max is remote_fetch_days + max_random_remote_fetch_days
+sleep_seconds=0d
+max_random_sleep_seconds=5 # max is sleep_seconds + sleep_seconds

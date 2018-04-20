@@ -12,3 +12,176 @@
 2018-04-19 23:24:48,553 - root - INFO - china_stock : 36 - max_random_remote_fetch_days is 35
 2018-04-19 23:24:48,554 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
 2018-04-19 23:24:48,555 - root - INFO - china_stock : 38 - remote source type is get_h_data
+2018-04-20 23:46:06,752 - root - INFO - __init__ : 145 - /tmp/greenseer/china_stock_price_daily not exists,auto create!!!
+2018-04-20 23:46:06,754 - root - INFO - china_stock : 34 - sleep seconds is between 5 to 5
+2018-04-20 23:46:06,756 - root - INFO - china_stock : 36 - fetch days is between  365 to 400 
+2018-04-20 23:46:06,757 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
+2018-04-20 23:46:06,760 - root - INFO - china_stock : 38 - remote source type is get_h_data
+2018-04-20 23:47:18,115 - root - INFO - __init__ : 148 - /tmp/greenseer/china_stock_price_daily exists
+2018-04-20 23:47:18,116 - root - INFO - china_stock : 34 - sleep seconds is between 5 to 5
+2018-04-20 23:47:18,117 - root - INFO - china_stock : 36 - fetch days is between  365 to 400 
+2018-04-20 23:47:18,119 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
+2018-04-20 23:47:18,120 - root - INFO - china_stock : 38 - remote source type is get_h_data
+2018-04-20 23:47:18,166 - root - ERROR - __init__ : 170 - 600096 not exists in local
+2018-04-20 23:47:18,183 - root - INFO - china_stock : 54 - 600096 is dirty or empty, local data will be refresh
+2018-04-20 23:47:32,494 - root - INFO - china_stock : 90 - start to date: 1997-07-09 00:00:00
+2018-04-20 23:47:32,495 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:47:37,501 - root - INFO - china_stock : 47 - generate remote fetch 397 days
+2018-04-20 23:48:25,295 - root - INFO - china_stock : 112 - load prices,records size(267, 6)
+2018-04-20 23:48:25,296 - root - INFO - china_stock : 115 - load prices:from 1997-07-09 00:00:00 to 1998-08-10 00:00:00,records:(267, 6)
+2018-04-20 23:48:25,297 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:48:30,303 - root - INFO - china_stock : 47 - generate remote fetch 388 days
+2018-04-20 23:48:50,789 - root - INFO - china_stock : 112 - load prices,records size(260, 6)
+2018-04-20 23:48:50,791 - root - INFO - china_stock : 115 - load prices:from 1998-08-11 00:00:00 to 1999-09-03 00:00:00,records:(260, 6)
+2018-04-20 23:48:50,791 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:48:55,797 - root - INFO - china_stock : 47 - generate remote fetch 393 days
+2018-04-20 23:49:13,120 - root - INFO - china_stock : 112 - load prices,records size(256, 6)
+2018-04-20 23:49:13,121 - root - INFO - china_stock : 115 - load prices:from 1999-09-04 00:00:00 to 2000-10-01 00:00:00,records:(256, 6)
+2018-04-20 23:49:13,122 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:49:18,128 - root - INFO - china_stock : 47 - generate remote fetch 385 days
+2018-04-20 23:49:49,430 - root - INFO - china_stock : 112 - load prices,records size(247, 6)
+2018-04-20 23:49:49,431 - root - INFO - china_stock : 115 - load prices:from 2000-10-02 00:00:00 to 2001-10-22 00:00:00,records:(247, 6)
+2018-04-20 23:49:49,432 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:49:54,438 - root - INFO - china_stock : 47 - generate remote fetch 387 days
+2018-04-20 23:50:23,496 - root - INFO - china_stock : 112 - load prices,records size(252, 6)
+2018-04-20 23:50:23,497 - root - INFO - china_stock : 115 - load prices:from 2001-10-23 00:00:00 to 2002-11-14 00:00:00,records:(252, 6)
+2018-04-20 23:50:23,499 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:50:28,502 - root - INFO - china_stock : 47 - generate remote fetch 384 days
+2018-04-20 23:50:41,799 - root - INFO - china_stock : 112 - load prices,records size(254, 6)
+2018-04-20 23:50:41,800 - root - INFO - china_stock : 115 - load prices:from 2002-11-15 00:00:00 to 2003-12-04 00:00:00,records:(254, 6)
+2018-04-20 23:50:41,801 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:50:46,805 - root - INFO - china_stock : 47 - generate remote fetch 398 days
+2018-04-20 23:51:11,582 - root - INFO - china_stock : 112 - load prices,records size(263, 6)
+2018-04-20 23:51:11,583 - root - INFO - china_stock : 115 - load prices:from 2003-12-05 00:00:00 to 2005-01-06 00:00:00,records:(263, 6)
+2018-04-20 23:51:11,584 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:51:16,590 - root - INFO - china_stock : 47 - generate remote fetch 400 days
+2018-04-20 23:51:26,770 - root - INFO - china_stock : 112 - load prices,records size(259, 6)
+2018-04-20 23:51:26,771 - root - INFO - china_stock : 115 - load prices:from 2005-01-07 00:00:00 to 2006-02-11 00:00:00,records:(259, 6)
+2018-04-20 23:51:26,772 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:51:31,778 - root - INFO - china_stock : 47 - generate remote fetch 395 days
+2018-04-20 23:52:05,566 - root - INFO - china_stock : 112 - load prices,records size(240, 6)
+2018-04-20 23:52:05,567 - root - INFO - china_stock : 115 - load prices:from 2006-02-12 00:00:00 to 2007-03-14 00:00:00,records:(240, 6)
+2018-04-20 23:52:05,568 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:52:10,573 - root - INFO - china_stock : 47 - generate remote fetch 381 days
+2018-04-20 23:52:30,583 - root - INFO - china_stock : 112 - load prices,records size(239, 6)
+2018-04-20 23:52:30,585 - root - INFO - china_stock : 115 - load prices:from 2007-03-15 00:00:00 to 2008-03-30 00:00:00,records:(239, 6)
+2018-04-20 23:52:30,586 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:52:35,592 - root - INFO - china_stock : 47 - generate remote fetch 375 days
+2018-04-20 23:53:04,455 - root - INFO - china_stock : 112 - load prices,records size(102, 6)
+2018-04-20 23:53:04,456 - root - INFO - china_stock : 115 - load prices:from 2008-03-31 00:00:00 to 2009-04-10 00:00:00,records:(102, 6)
+2018-04-20 23:53:04,458 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:53:09,485 - root - INFO - china_stock : 47 - generate remote fetch 395 days
+2018-04-20 23:53:54,303 - root - INFO - china_stock : 112 - load prices,records size(262, 6)
+2018-04-20 23:53:54,323 - root - INFO - china_stock : 115 - load prices:from 2009-04-11 00:00:00 to 2010-05-11 00:00:00,records:(262, 6)
+2018-04-20 23:53:54,325 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:53:59,331 - root - INFO - china_stock : 47 - generate remote fetch 387 days
+2018-04-20 23:54:37,248 - root - INFO - china_stock : 112 - load prices,records size(257, 6)
+2018-04-20 23:54:37,249 - root - INFO - china_stock : 115 - load prices:from 2010-05-12 00:00:00 to 2011-06-03 00:00:00,records:(257, 6)
+2018-04-20 23:54:37,250 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:54:42,256 - root - INFO - china_stock : 47 - generate remote fetch 398 days
+2018-04-20 23:55:57,989 - root - INFO - china_stock : 112 - load prices,records size(184, 6)
+2018-04-20 23:55:57,997 - root - INFO - china_stock : 115 - load prices:from 2011-06-04 00:00:00 to 2012-07-06 00:00:00,records:(184, 6)
+2018-04-20 23:55:57,999 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:56:03,004 - root - INFO - china_stock : 47 - generate remote fetch 371 days
+2018-04-20 23:56:25,963 - root - INFO - china_stock : 112 - load prices,records size(235, 6)
+2018-04-20 23:56:25,964 - root - INFO - china_stock : 115 - load prices:from 2012-07-07 00:00:00 to 2013-07-13 00:00:00,records:(235, 6)
+2018-04-20 23:56:25,965 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:56:30,971 - root - INFO - china_stock : 47 - generate remote fetch 369 days
+2018-04-20 23:57:08,375 - root - INFO - china_stock : 112 - load prices,records size(232, 6)
+2018-04-20 23:57:08,376 - root - INFO - china_stock : 115 - load prices:from 2013-07-14 00:00:00 to 2014-07-18 00:00:00,records:(232, 6)
+2018-04-20 23:57:08,377 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:57:13,383 - root - INFO - china_stock : 47 - generate remote fetch 371 days
+2018-04-20 23:57:54,350 - root - INFO - china_stock : 112 - load prices,records size(234, 6)
+2018-04-20 23:57:54,351 - root - INFO - china_stock : 115 - load prices:from 2014-07-19 00:00:00 to 2015-07-25 00:00:00,records:(234, 6)
+2018-04-20 23:57:54,352 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:57:59,357 - root - INFO - china_stock : 47 - generate remote fetch 384 days
+2018-04-20 23:58:25,591 - root - INFO - china_stock : 112 - load prices,records size(258, 6)
+2018-04-20 23:58:25,592 - root - INFO - china_stock : 115 - load prices:from 2015-07-26 00:00:00 to 2016-08-13 00:00:00,records:(258, 6)
+2018-04-20 23:58:25,593 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:58:30,599 - root - INFO - china_stock : 47 - generate remote fetch 367 days
+2018-04-20 23:58:44,616 - root - INFO - china_stock : 112 - load prices,records size(245, 6)
+2018-04-20 23:58:44,618 - root - INFO - china_stock : 115 - load prices:from 2016-08-14 00:00:00 to 2017-08-16 00:00:00,records:(245, 6)
+2018-04-20 23:58:44,619 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:58:49,621 - root - INFO - china_stock : 47 - generate remote fetch 385 days
+2018-04-20 23:59:34,266 - root - INFO - china_stock : 112 - load prices,records size(162, 6)
+2018-04-20 23:59:34,268 - root - INFO - china_stock : 115 - load prices:from 2017-08-17 00:00:00 to 2018-04-20 23:47:32.494497,records:(162, 6)
+2018-04-20 23:59:34,269 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-20 23:59:39,275 - root - INFO - china_stock : 126 - finish fetch stock prices: 600096
+2018-04-21 00:00:32,466 - root - INFO - __init__ : 148 - /tmp/greenseer/china_stock_price_daily exists
+2018-04-21 00:00:32,467 - root - INFO - china_stock : 34 - sleep seconds is between 5 to 10
+2018-04-21 00:00:32,469 - root - INFO - china_stock : 36 - fetch days is between  365 to 400 
+2018-04-21 00:00:32,470 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
+2018-04-21 00:00:32,471 - root - INFO - china_stock : 38 - remote source type is get_h_data
+2018-04-21 00:00:43,235 - root - INFO - china_stock : 144 - 600096 local data is dirty
+2018-04-21 00:00:43,236 - root - INFO - china_stock : 153 - last day is 2018-04-21 00:00:00
+2018-04-21 00:00:45,775 - root - INFO - __init__ : 158 - /tmp/greenseer/china_stock_price_daily/600096.tar.gz exists and has been deleted
+2018-04-21 00:02:26,883 - root - INFO - __init__ : 148 - /tmp/greenseer/china_stock_price_daily exists
+2018-04-21 00:02:26,885 - root - INFO - china_stock : 34 - sleep seconds is between 5 to 10
+2018-04-21 00:02:26,887 - root - INFO - china_stock : 36 - fetch days is between  365 to 400 
+2018-04-21 00:02:26,888 - root - INFO - china_stock : 37 - local source type is <class 'greenseer.repository.FolderSource'>
+2018-04-21 00:02:26,889 - root - INFO - china_stock : 38 - remote source type is get_h_data
+2018-04-21 00:02:26,891 - root - ERROR - __init__ : 170 - 600097 not exists in local
+2018-04-21 00:02:26,893 - root - INFO - china_stock : 54 - 600097 is dirty or empty, local data will be refresh
+2018-04-21 00:02:42,769 - root - INFO - china_stock : 90 - start to date: 1997-06-19 00:00:00
+2018-04-21 00:02:42,771 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-21 00:02:47,777 - root - DEBUG - china_stock : 47 - generate remote fetch 395 days
+2018-04-21 00:03:45,351 - root - INFO - china_stock : 114 - load prices:from 1997-06-19 00:00:00 to 1998-07-19 00:00:00,records shape:(262, 6)
+2018-04-21 00:03:45,353 - root - DEBUG - china_stock : 42 - generate sleep 8 seconds
+2018-04-21 00:03:53,363 - root - DEBUG - china_stock : 47 - generate remote fetch 376 days
+2018-04-21 00:04:06,493 - root - INFO - china_stock : 114 - load prices:from 1998-07-20 00:00:00 to 1999-07-31 00:00:00,records shape:(252, 6)
+2018-04-21 00:04:06,494 - root - DEBUG - china_stock : 42 - generate sleep 8 seconds
+2018-04-21 00:04:14,500 - root - DEBUG - china_stock : 47 - generate remote fetch 376 days
+2018-04-21 00:04:45,124 - root - INFO - china_stock : 114 - load prices:from 1999-08-01 00:00:00 to 2000-08-11 00:00:00,records shape:(245, 6)
+2018-04-21 00:04:45,125 - root - DEBUG - china_stock : 42 - generate sleep 9 seconds
+2018-04-21 00:04:54,135 - root - DEBUG - china_stock : 47 - generate remote fetch 365 days
+2018-04-21 00:05:21,549 - root - INFO - china_stock : 114 - load prices:from 2000-08-12 00:00:00 to 2001-08-12 00:00:00,records shape:(234, 6)
+2018-04-21 00:05:21,550 - root - DEBUG - china_stock : 42 - generate sleep 6 seconds
+2018-04-21 00:05:27,557 - root - DEBUG - china_stock : 47 - generate remote fetch 386 days
+2018-04-21 00:06:05,822 - root - INFO - china_stock : 114 - load prices:from 2001-08-13 00:00:00 to 2002-09-03 00:00:00,records shape:(251, 6)
+2018-04-21 00:06:05,823 - root - DEBUG - china_stock : 42 - generate sleep 9 seconds
+2018-04-21 00:06:14,833 - root - DEBUG - china_stock : 47 - generate remote fetch 384 days
+2018-04-21 00:06:50,895 - root - INFO - china_stock : 114 - load prices:from 2002-09-04 00:00:00 to 2003-09-23 00:00:00,records shape:(253, 6)
+2018-04-21 00:06:50,899 - root - DEBUG - china_stock : 42 - generate sleep 8 seconds
+2018-04-21 00:06:58,909 - root - DEBUG - china_stock : 47 - generate remote fetch 366 days
+2018-04-21 00:07:12,760 - root - INFO - china_stock : 114 - load prices:from 2003-09-24 00:00:00 to 2004-09-24 00:00:00,records shape:(242, 6)
+2018-04-21 00:07:12,762 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-21 00:07:17,768 - root - DEBUG - china_stock : 47 - generate remote fetch 390 days
+2018-04-21 00:07:38,218 - root - INFO - china_stock : 114 - load prices:from 2004-09-25 00:00:00 to 2005-10-20 00:00:00,records shape:(254, 6)
+2018-04-21 00:07:38,221 - root - DEBUG - china_stock : 42 - generate sleep 8 seconds
+2018-04-21 00:07:46,223 - root - DEBUG - china_stock : 47 - generate remote fetch 383 days
+2018-04-21 00:08:13,825 - root - INFO - china_stock : 114 - load prices:from 2005-10-21 00:00:00 to 2006-11-08 00:00:00,records shape:(224, 6)
+2018-04-21 00:08:13,826 - root - DEBUG - china_stock : 42 - generate sleep 6 seconds
+2018-04-21 00:08:19,833 - root - DEBUG - china_stock : 47 - generate remote fetch 372 days
+2018-04-21 00:08:51,205 - root - INFO - china_stock : 114 - load prices:from 2006-11-09 00:00:00 to 2007-11-16 00:00:00,records shape:(241, 6)
+2018-04-21 00:08:51,206 - root - DEBUG - china_stock : 42 - generate sleep 7 seconds
+2018-04-21 00:08:58,214 - root - DEBUG - china_stock : 47 - generate remote fetch 373 days
+2018-04-21 00:09:33,817 - root - INFO - china_stock : 114 - load prices:from 2007-11-17 00:00:00 to 2008-11-24 00:00:00,records shape:(217, 6)
+2018-04-21 00:09:33,818 - root - DEBUG - china_stock : 42 - generate sleep 9 seconds
+2018-04-21 00:09:42,826 - root - DEBUG - china_stock : 47 - generate remote fetch 395 days
+2018-04-21 00:10:07,158 - root - INFO - china_stock : 114 - load prices:from 2008-11-25 00:00:00 to 2009-12-25 00:00:00,records shape:(256, 6)
+2018-04-21 00:10:07,159 - root - DEBUG - china_stock : 42 - generate sleep 9 seconds
+2018-04-21 00:10:16,170 - root - DEBUG - china_stock : 47 - generate remote fetch 399 days
+2018-04-21 00:10:35,240 - root - INFO - china_stock : 114 - load prices:from 2009-12-26 00:00:00 to 2011-01-29 00:00:00,records shape:(261, 6)
+2018-04-21 00:10:35,241 - root - DEBUG - china_stock : 42 - generate sleep 8 seconds
+2018-04-21 00:10:43,250 - root - DEBUG - china_stock : 47 - generate remote fetch 398 days
+2018-04-21 00:10:55,799 - root - INFO - china_stock : 114 - load prices:from 2011-01-30 00:00:00 to 2012-03-03 00:00:00,records shape:(262, 6)
+2018-04-21 00:10:55,801 - root - DEBUG - china_stock : 42 - generate sleep 8 seconds
+2018-04-21 00:11:03,806 - root - DEBUG - china_stock : 47 - generate remote fetch 382 days
+2018-04-21 00:11:49,604 - root - INFO - china_stock : 114 - load prices:from 2012-03-04 00:00:00 to 2013-03-21 00:00:00,records shape:(254, 6)
+2018-04-21 00:11:49,605 - root - DEBUG - china_stock : 42 - generate sleep 10 seconds
+2018-04-21 00:11:59,613 - root - DEBUG - china_stock : 47 - generate remote fetch 366 days
+2018-04-21 00:12:12,212 - root - INFO - china_stock : 114 - load prices:from 2013-03-22 00:00:00 to 2014-03-23 00:00:00,records shape:(240, 6)
+2018-04-21 00:12:12,213 - root - DEBUG - china_stock : 42 - generate sleep 5 seconds
+2018-04-21 00:12:17,216 - root - DEBUG - china_stock : 47 - generate remote fetch 391 days
+2018-04-21 00:12:28,377 - root - INFO - china_stock : 114 - load prices:from 2014-03-24 00:00:00 to 2015-04-19 00:00:00,records shape:(250, 6)
+2018-04-21 00:12:28,378 - root - DEBUG - china_stock : 42 - generate sleep 7 seconds
+2018-04-21 00:12:35,387 - root - DEBUG - china_stock : 47 - generate remote fetch 374 days
+2018-04-21 00:13:08,732 - root - INFO - china_stock : 114 - load prices:from 2015-04-20 00:00:00 to 2016-04-28 00:00:00,records shape:(136, 6)
+2018-04-21 00:13:08,733 - root - DEBUG - china_stock : 42 - generate sleep 6 seconds
+2018-04-21 00:13:14,741 - root - DEBUG - china_stock : 47 - generate remote fetch 392 days
+2018-04-21 00:13:46,495 - root - INFO - china_stock : 114 - load prices:from 2016-04-29 00:00:00 to 2017-05-26 00:00:00,records shape:(240, 6)
+2018-04-21 00:13:46,496 - root - DEBUG - china_stock : 42 - generate sleep 6 seconds
+2018-04-21 00:13:52,500 - root - DEBUG - china_stock : 47 - generate remote fetch 377 days
+2018-04-21 00:14:17,655 - root - INFO - china_stock : 114 - load prices:from 2017-05-27 00:00:00 to 2018-04-21 00:02:42.769854,records shape:(220, 6)
+2018-04-21 00:14:17,656 - root - DEBUG - china_stock : 42 - generate sleep 7 seconds
+2018-04-21 00:14:24,662 - root - INFO - china_stock : 125 - finish fetch stock prices: 600097
