@@ -13,7 +13,7 @@ class TestChinaStock(TestCase):
         self.__repository = create_daily_price_repository()
 
     def test_load_one_stock(self):
-        print(self.__repository.load_data("600096"))
+        print(self.__repository.load_data("600096").tail(1))
 
 
 if __name__ == '__main__':

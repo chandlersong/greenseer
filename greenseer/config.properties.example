@@ -1,5 +1,7 @@
 [china_stock_config]
+# max is remote_fetch_days + max_random_remote_fetch_days
 remote_fetch_days=365
-max_random_remote_fetch_days=35 # max is remote_fetch_days + max_random_remote_fetch_days
-sleep_seconds=0d
-max_random_sleep_seconds=5 # max is sleep_seconds + sleep_seconds
+max_random_remote_fetch_days=35
+# max is sleep_seconds + sleep_seconds
+sleep_seconds=5
+max_random_sleep_seconds=5

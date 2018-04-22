@@ -12,7 +12,7 @@
 ## The Logging format template
 #c.Application.log_format = '[%(name)s]%(highlevel)s %(message)s'
 
-## Set the log level by value or name.
+## Set the logs level by value or name.
 #c.Application.log_level = 30
 
 #------------------------------------------------------------------------------
@@ -528,7 +528,7 @@ c.NotebookApp.port = 8080
 #  root_dir : unicode
 #      A directory against against which API-style paths are to be resolved.
 #  
-#  log : logging.Logger
+#  logs : logging.Logger
 
 ## By default notebooks are saved on disk on a temporary file and then if
 #  succefully written, it replaces the old ones. This procedure, namely
