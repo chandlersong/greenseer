@@ -12,7 +12,7 @@ from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
 from greenseer.repository import FolderSource, LocalSource
-from greenseer.repository.china_stock import DailyPriceRepository
+from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty
 
@@ -155,16 +155,6 @@ class TestChinaStockModuleDailyPriceRepository(TestCase):
         else:
             self.repository.save_or_update_local = Mock()
 
-    def test_check_data_dirty_is_dirty(self):
-        self.mock_remote_source.return_value = self.__dirty_data.tail(1)
-
-        self.assertTrue(self.repository.check_data_dirty(TEST_STOCK_ID, self.__local_data))
-
-    def test_check_data_dirty_is_clean(self):
-        self.mock_remote_source.return_value = self.__local_data.tail(1)
-
-        self.assertFalse(self.repository.check_data_dirty(TEST_STOCK_ID, self.__local_data))
-
     def test_find_update_date_return_null_if_no_need(self):
         today = datetime.strptime("2017-06-30", DailyPriceRepository.DEFAULT_DATE_FORMAT)
         self.assertIsNone(self.repository.find_update_date(self.__local_data, today))
@@ -203,6 +193,27 @@ class TestChinaStockModuleDailyPriceRepository(TestCase):
         self.mock_remote_source.assert_called_once_with(TEST_STOCK_ID, start=next_day,
                                                         end=datetime.now().strftime(
                                                             DailyPriceRepository.DEFAULT_DATE_FORMAT))
+
+
+class TestTuShareHDataFetcher(TestCase):
+
+    def setUp(self):
+        self.__mock_remote_source = Mock()
+        self.__mock_remote_source.__name__ = "mock_remote_source"
+        self.fetcher = TuShareHDataFetcher(remote_source=self.__mock_remote_source)
+
+        self.__test_data = read_sina_600096_test_data()
+        self.__dirty_test_data = read_sina_600096_test_data_dirty()
+
+    def test_check_data_dirty_is_clean(self):
+        self.__mock_remote_source.return_value = self.__test_data.tail(1)
+
+        self.assertFalse(self.fetcher.check_data_dirty(TEST_STOCK_ID, self.__test_data))
+
+    def test_check_data_dirty_is_dirty(self):
+        self.__mock_remote_source.return_value = self.__dirty_test_data.tail(1)
+
+        self.assertTrue(self.fetcher.check_data_dirty(TEST_STOCK_ID, self.__test_data))
 
 
 if __name__ == '__main__':

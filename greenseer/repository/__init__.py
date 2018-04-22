@@ -94,7 +94,11 @@ class LocalSource:
         pass
 
 
-class BaseRepository:
+class Fetcher:
+    pass
+
+
+class BaseRepository(Fetcher):
     '''
     all the DataSource should be responsibility for one kind of data. like store price.
     if a user need to load different data,it should provide different DataSource.
@@ -129,6 +133,10 @@ class BaseRepository:
     @abc.abstractmethod
     def load_data(self, stock_id, force_local=False, *args, **kwargs) -> DataFrame:
         pass
+
+
+class RemoteFetcher(Fetcher):
+    pass
 
 
 class FolderSource(LocalSource):
