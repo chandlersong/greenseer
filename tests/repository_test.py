@@ -192,7 +192,7 @@ class TestChinaStockModuleDailyPriceRepository(TestCase):
         self.mock_local_source.append_data.assert_called_once_with(TEST_STOCK_ID, self.__remote_data)
         self.mock_remote_source.assert_called_once_with(TEST_STOCK_ID, start=next_day,
                                                         end=datetime.now().strftime(
-                                                            DailyPriceRepository.DEFAULT_DATE_FORMAT))
+                                                            DailyPriceRepository.DEFAULT_DATE_FORMAT), autype='hfq')
 
 
 class TestTuShareHDataFetcher(TestCase):

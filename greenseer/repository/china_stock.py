@@ -1,164 +1,47 @@
 import logging
 import tempfile
-import time
-from datetime import datetime, timedelta
-from random import randint
+from datetime import datetime
 
 import numpy as np
-import pandas as pd
 import tushare as ts
 from pandas import DataFrame
 
 from greenseer.configuration import get_global_configuration
-from greenseer.repository import BaseRepository, LocalSource, FolderSource, RemoteFetcher
+from greenseer.repository import BaseRepository, LocalSource, FolderSource, TimeSeriesRemoteFetcher
 
 TU_SHARE_SINA_DAILY = {'amount': np.float64, 'volume': np.float64}
 
 
-class TuShareHDataFetcher(RemoteFetcher):
+class TuShareHDataFetcher(TimeSeriesRemoteFetcher):
     logger = logging.getLogger()
 
-    def __init__(self, sleep_seconds=10, max_random_sleep_seconds=20,
-                 remote_fetch_days=365, max_random_remote_fetch_days=35, remote_source=ts.get_h_data):
-        self.__sleep_seconds = sleep_seconds
-        self.__remote_fetch_days = remote_fetch_days
-        self.__max_random_sleep_seconds = max_random_sleep_seconds
-        self.__max_random_remote_fetch_days = max_random_remote_fetch_days
-        self.logger.info("sleep seconds is between {} to {}".format(self.__sleep_seconds,
-                                                                    self.__sleep_seconds +
-                                                                    self.__max_random_sleep_seconds))
-        self.logger.info("fetch days is between  {} to {} ".format(self.__remote_fetch_days,
-                                                                   self.__remote_fetch_days +
-                                                                   self.__max_random_remote_fetch_days))
-
-        self.__remote_source = remote_source
-        self.logger.info("remote source type is {}".format(remote_source.__name__))
-
-    @property
-    def remote_source(self):
-        return self.__remote_source
-
-    def random_sleep_seconds(self):
-        result = self.__sleep_seconds + randint(0, self.__max_random_sleep_seconds)
-        self.logger.debug("generate sleep {} seconds".format(result))
-        return result
-
-    def random_fetch_days(self):
-        result = self.__remote_fetch_days + randint(0, self.__max_random_remote_fetch_days)
-        self.logger.debug("generate remote fetch {} days".format(result))
-        return timedelta(days=result)
-
-    def check_data_dirty(self, stock_id, local_data: DataFrame):
-        latest_record = local_data.tail(1)
-
-        if latest_record.empty:
-            return True
-
-        last_date = latest_record.index[0]
-        remote_record = self.load_remote(stock_id, last_date, last_date)
-
-        result = not latest_record.sort_index(axis=1).equals(remote_record.sort_index(axis=1))
-        self.logger.info("{} local data is dirty".format(stock_id))
-        return result
-
-    def initial_remote_data(self, stock_id) -> DataFrame:
-        return self.load_data_by_period(stock_id)
-
-    def load_data_by_period(self, stock_id):
-        period_start_date = datetime.strptime(str(ts.get_stock_basics().loc[stock_id]['timeToMarket']), '%Y%m%d')
-        end = datetime.now()
-        self.logger.info("start to date: %s" % period_start_date)
-        time.sleep(self.random_sleep_seconds())
-        result = []
-        is_block = False
-        while period_start_date < end:
-
-            try:
-                if not is_block:
-                    period_end_date = period_start_date + self.random_fetch_days()
-                    if period_end_date >= end:
-                        period_end_date = end
-                else:
-                    self.logger.info("last call has been blocked, try again")
-
-                is_block = False
-
-                df = self.load_remote(stock_id, period_start_date, period_end_date)
-
-                if df is not None and not df.empty:
-                    result.append(df)
-
-                    self.logger.info(
-                        "load prices:from {} to {},records shape:{}".format(period_start_date, period_end_date,
-                                                                            df.shape))
-                period_start_date = period_end_date + DailyPriceRepository.ONE_DAY
-                # avoid be block
-                time.sleep(self.random_sleep_seconds())
-            except IOError as e:
-                self.logger.error("has been blocked,will sleep 3 minutes")
-                time.sleep(3 * 60)
-                is_block = True
-                self.logger.error("finish sleep")
-                continue
-
-        self.logger.info("finish fetch stock prices: %s" % stock_id)
-        if result:  # result is not empty
-            return pd.concat(result).sort_index()
-        else:
-            return pd.DataFrame()
+    def __init__(self, remote_source=ts.get_h_data, sleep_seconds=10, max_random_sleep_seconds=20,
+                 remote_fetch_days=365, max_random_remote_fetch_days=35):
+        TimeSeriesRemoteFetcher.__init__(self, remote_source, sleep_seconds, max_random_sleep_seconds,
+                                         remote_fetch_days,
+                                         max_random_remote_fetch_days)
 
     def load_remote(self, stock_id, start_date, end_date):
         return self.remote_source(stock_id, start=start_date.strftime(DailyPriceRepository.DEFAULT_DATE_FORMAT),
                                   end=end_date.strftime(DailyPriceRepository.DEFAULT_DATE_FORMAT), autype='hfq')
 
+    def get_stock_first_day(self, stock_id):
+        return str(ts.get_stock_basics().loc[stock_id]['timeToMarket'])
+
 
 class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
     logger = logging.getLogger()
 
-    ONE_DAY = timedelta(days=1)
     DEFAULT_DATE_FORMAT = '%Y-%m-%d'
 
     def __init__(self, local_source, remote_source, sleep_seconds=10, max_random_sleep_seconds=20,
                  remote_fetch_days=365, max_random_remote_fetch_days=35):
-        BaseRepository.__init__(self, local_source, remote_source)
-        TuShareHDataFetcher.__init__(self, sleep_seconds, max_random_sleep_seconds, remote_fetch_days,
+        BaseRepository.__init__(self, local_source)
+        TuShareHDataFetcher.__init__(self, remote_source, sleep_seconds, max_random_sleep_seconds, remote_fetch_days,
                                      max_random_remote_fetch_days)
         self.logger.info("local source type is {}".format(type(local_source)))
 
-    def load_data(self, stock_id, force_local=False) -> DataFrame:
 
-        local_data = self.local_source.load_data(stock_id).sort_index()
-        if local_data.empty or self.check_data_dirty(stock_id, local_data):
-            self.logger.info("{} is dirty or empty, local data will be refresh".format(stock_id))
-            remote_data = self.initial_remote_data(stock_id)
-            self.save_or_update_local(stock_id, remote_data)
-            return remote_data
-        else:
-            self.append_local_if_necessary(stock_id, local_data)
-            return local_data
-
-    def find_update_date(self, data: DataFrame, today=None):
-        if today is None:
-            today = datetime.now()
-
-        last_date = data.index[-1]
-        if (last_date - today).days == 0:
-            return None
-
-        return last_date + self.ONE_DAY
-
-    def save_or_update_local(self, stock_id, data: DataFrame):
-        self.local_source.refresh_data(stock_id, data)
-
-    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        next_day = self.find_update_date(local_data)
-
-        if next_day is None:
-            self.logger.info("no need to append")
-            return
-        self.logger.info("next day is {}".format(next_day))
-        self.local_source.append_data(stock_id,
-                                      self.load_remote(stock_id, next_day, datetime.now()))
 
 
 def create_daily_price_repository(remote_source=None, local_source: LocalSource = None) -> DailyPriceRepository:
