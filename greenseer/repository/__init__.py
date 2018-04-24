@@ -1,7 +1,8 @@
 import abc
 import logging
 import os
-from datetime import timedelta, datetime, time
+import time
+from datetime import timedelta, datetime
 from random import randint
 
 import numpy as np
@@ -22,23 +23,6 @@ each will have it's own implementation.
 """
 
 DATA_TYPE_FOR_TRANSFORM = {'amount': np.float64, 'volume': np.float64}
-
-
-def change_index_to_date_type(func):
-    def format_index(*args, **kwargs):
-        result = func(*args, **kwargs)
-        index = result.index
-        return result.set_index(index.set_names(['date']).to_datetime())
-
-    return format_index
-
-
-def change_index_to_str(func):
-    def format_index(*args, **kwargs):
-        result = func(*args, **kwargs)
-        return result.set_index(pd.Index(result.index.map(str)))
-
-    return format_index
 
 
 class LocalSource:
@@ -159,30 +143,12 @@ class BaseRepository(RemoteFetcher):
             self.append_local_if_necessary(stock_id, local_data)
             return local_data
 
-    def find_update_date(self, data: DataFrame, today=None):
-        if today is None:
-            today = datetime.now()
-
-        last_date = data.index[-1]
-        if (last_date - today).days == 0:
-            return None
-
-        return last_date + self.ONE_DAY
-
     def save_or_update_local(self, stock_id, remote_data: DataFrame):
         self.local_source.refresh_data(stock_id, remote_data)
 
+    @abc.abstractmethod
     def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        next_day = self.find_update_date(local_data)
-
-        if next_day is None:
-            self.logger.info("no need to append")
-            return
-        self.logger.info("next day is {}".format(next_day))
-        self.local_source.append_data(stock_id,
-                                      self.load_remote(stock_id, next_day, datetime.now()))
-
-
+        pass
 
 
 class TimeSeriesRemoteFetcher(RemoteFetcher):

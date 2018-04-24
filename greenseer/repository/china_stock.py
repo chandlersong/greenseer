@@ -41,6 +41,26 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
                                      max_random_remote_fetch_days)
         self.logger.info("local source type is {}".format(type(local_source)))
 
+    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
+        next_day = self.find_update_date(local_data)
+
+        if next_day is None:
+            self.logger.info("no need to append")
+            return
+        self.logger.info("next day is {}".format(next_day))
+        self.local_source.append_data(stock_id,
+                                      self.load_remote(stock_id, next_day, datetime.now()))
+
+    def find_update_date(self, data: DataFrame, today=None):
+        if today is None:
+            today = datetime.now()
+
+        last_date = data.index[-1]
+        if (last_date - today).days == 0:
+            return None
+
+        return last_date + self.ONE_DAY
+
 
 
 

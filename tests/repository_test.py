@@ -11,7 +11,7 @@ from numpy.matlib import randn
 from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
-from greenseer.repository import FolderSource, LocalSource
+from greenseer.repository import FolderSource, LocalSource, BaseRepository
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty
@@ -94,14 +94,14 @@ class TestFolderSource(TestCase):
                            read_compression_data_to_dataframe(self.expected_path))
 
 
-class TestChinaStockModuleDailyPriceRepository(TestCase):
+class TestBaseRepository(TestCase):
 
     def setUp(self):
         self.mock_remote_source = MagicMock()
         self.mock_remote_source.__name__ = "mock_remote_function"
         self.mock_local_source = MagicMock(spec=LocalSource)
 
-        self.repository = DailyPriceRepository(self.mock_local_source, self.mock_remote_source)
+        self.repository = BaseRepository(self.mock_local_source)
 
         self.__remote_data = DataFrame(
             {'open': [1, 2], 'high': [3, 4], 'close': [5, 6], 'low': [7, 8], 'volume': [9, 10], 'amount': [11, 12]},
@@ -154,6 +154,23 @@ class TestChinaStockModuleDailyPriceRepository(TestCase):
             self.__local_data.sort_index = Mock(return_value=self.__local_data)
         else:
             self.repository.save_or_update_local = Mock()
+
+
+class TestChinaStockModuleDailyPriceRepository(TestCase):
+
+    def setUp(self):
+        self.mock_remote_source = MagicMock()
+        self.mock_remote_source.__name__ = "mock_remote_function"
+        self.mock_local_source = MagicMock(spec=LocalSource)
+
+        self.repository = DailyPriceRepository(self.mock_local_source, self.mock_remote_source)
+
+        self.__remote_data = DataFrame(
+            {'open': [1, 2], 'high': [3, 4], 'close': [5, 6], 'low': [7, 8], 'volume': [9, 10], 'amount': [11, 12]},
+            index=(pd.Index(pd.date_range('7/1/2017', periods=2), name='date')))
+        self.__local_data = read_sina_600096_test_data()
+        self.__dirty_data = read_sina_600096_test_data_dirty()
+        self.repository.initial_remote_data = MagicMock(return_value=self.__remote_data)
 
     def test_find_update_date_return_null_if_no_need(self):
         today = datetime.strptime("2017-06-30", DailyPriceRepository.DEFAULT_DATE_FORMAT)
