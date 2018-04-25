@@ -21,7 +21,7 @@ class TuShareHDataFetcher(TimeSeriesRemoteFetcher):
                                          remote_fetch_days,
                                          max_random_remote_fetch_days)
 
-    def load_remote(self, stock_id, start_date, end_date):
+    def do_load_remote(self, stock_id, start_date, end_date, *args, **kwargs):
         return self.remote_source(stock_id, start=start_date.strftime(DailyPriceRepository.DEFAULT_DATE_FORMAT),
                                   end=end_date.strftime(DailyPriceRepository.DEFAULT_DATE_FORMAT), autype='hfq')
 
@@ -60,8 +60,6 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
             return None
 
         return last_date + self.ONE_DAY
-
-
 
 
 def create_daily_price_repository(remote_source=None, local_source: LocalSource = None) -> DailyPriceRepository:

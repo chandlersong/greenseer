@@ -157,12 +157,17 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
     ONE_DAY = timedelta(days=1)
 
     def __init__(self, remote_source, sleep_seconds=10, max_random_sleep_seconds=20,
-                 remote_fetch_days=365, max_random_remote_fetch_days=35):
+                 remote_fetch_days=365, max_random_remote_fetch_days=35,
+                 block_sleep_seconds=3 * 60):
         RemoteFetcher.__init__(self, remote_source)
         self.__sleep_seconds = sleep_seconds
         self.__remote_fetch_days = remote_fetch_days
         self.__max_random_sleep_seconds = max_random_sleep_seconds
         self.__max_random_remote_fetch_days = max_random_remote_fetch_days
+        self.__block_sleep_seconds = block_sleep_seconds
+
+        self.logger.info("block sleep seconds is {}".format(block_sleep_seconds))
+
         self.logger.info("sleep seconds is between {} to {}".format(self.__sleep_seconds,
                                                                     self.__sleep_seconds +
                                                                     self.__max_random_sleep_seconds))
@@ -183,8 +188,17 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
     def initial_remote_data(self, *args, **kwargs):
         pass
 
-    @abc.abstractmethod
     def load_remote(self, stock_id, start_date, end_date, *args, **kwargs):
+        try:
+            return self.do_load_remote(stock_id, start_date, end_date, *args, **kwargs)
+        except IOError:
+            self.logger.error("has been blocked,will sleep 3 minutes")
+            time.sleep(self.__block_sleep_seconds)
+            self.logger.error("finish sleep")
+            return self.load_remote(stock_id, start_date, end_date)
+
+    @abc.abstractmethod
+    def do_load_remote(self, stock_id, start_date, end_date, *args, **kwargs):
         pass
 
     @abc.abstractmethod
@@ -213,36 +227,23 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
         self.logger.info("start to date: %s" % period_start_date)
         time.sleep(self.random_sleep_seconds())
         result = []
-        is_block = False
         while period_start_date < end:
 
-            try:
-                if not is_block:
-                    period_end_date = period_start_date + self.random_fetch_days()
-                    if period_end_date >= end:
-                        period_end_date = end
-                else:
-                    self.logger.info("last call has been blocked, try again")
+            period_end_date = period_start_date + self.random_fetch_days()
+            if period_end_date >= end:
+                period_end_date = end
 
-                is_block = False
+            df = self.load_remote(stock_id, period_start_date, period_end_date)
 
-                df = self.load_remote(stock_id, period_start_date, period_end_date)
+            if df is not None and not df.empty:
+                result.append(df)
 
-                if df is not None and not df.empty:
-                    result.append(df)
-
-                    self.logger.info(
-                        "load prices:from {} to {},records shape:{}".format(period_start_date, period_end_date,
-                                                                            df.shape))
-                period_start_date = period_end_date + TimeSeriesRemoteFetcher.ONE_DAY
-                # avoid be block
-                time.sleep(self.random_sleep_seconds())
-            except IOError as e:
-                self.logger.error("has been blocked,will sleep 3 minutes")
-                time.sleep(3 * 60)
-                is_block = True
-                self.logger.error("finish sleep")
-                continue
+                self.logger.info(
+                    "load prices:from {} to {},records shape:{}".format(period_start_date, period_end_date,
+                                                                        df.shape))
+            period_start_date = period_end_date + TimeSeriesRemoteFetcher.ONE_DAY
+            # avoid be block
+            time.sleep(self.random_sleep_seconds())
 
         self.logger.info("finish fetch stock prices: %s" % stock_id)
         if result:  # result is not empty

@@ -11,7 +11,7 @@ from numpy.matlib import randn
 from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
-from greenseer.repository import FolderSource, LocalSource, BaseRepository
+from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty
@@ -231,6 +231,36 @@ class TestTuShareHDataFetcher(TestCase):
         self.__mock_remote_source.return_value = self.__dirty_test_data.tail(1)
 
         self.assertTrue(self.fetcher.check_data_dirty(TEST_STOCK_ID, self.__test_data))
+
+
+class TestTimeSeriesRemoteFetcher(TestCase):
+
+    def setUp(self):
+        self.mock_remote_source = MagicMock()
+        self.mock_remote_source.__name__ = "mock_remote_function"
+
+        self.fetcher = TimeSeriesRemoteFetcher(self.mock_remote_source, block_sleep_seconds=1)
+
+        self.__remote_data = DataFrame(
+            {'open': [1, 2], 'high': [3, 4], 'close': [5, 6], 'low': [7, 8], 'volume': [9, 10], 'amount': [11, 12]},
+            index=(pd.Index(pd.date_range('7/1/2017', periods=2), name='date')))
+        self.__local_data = read_sina_600096_test_data()
+        self.__dirty_data = read_sina_600096_test_data_dirty()
+
+        self.__start_date = datetime.strptime("2017-06-30", DailyPriceRepository.DEFAULT_DATE_FORMAT)
+        self.__end_date = datetime.now()
+
+    def test_load_remote_normal(self):
+        self.fetcher.do_load_remote = Mock(return_value=self.__remote_data)
+
+        assert_frame_equal(self.__remote_data,
+                           self.fetcher.load_remote(TEST_STOCK_ID, self.__start_date, self.__end_date))
+
+    def test_load_remote_io_exception(self):
+        self.fetcher.do_load_remote = Mock(side_effect=[IOError, self.__remote_data])
+
+        assert_frame_equal(self.__remote_data,
+                           self.fetcher.load_remote(TEST_STOCK_ID, self.__start_date, self.__end_date))
 
 
 if __name__ == '__main__':
