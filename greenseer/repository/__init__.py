@@ -215,7 +215,7 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
         remote_record = self.load_remote(stock_id, last_date, last_date)
 
         result = not latest_record.sort_index(axis=1).equals(remote_record.sort_index(axis=1))
-        self.logger.info("{} local data is dirty".format(stock_id))
+        self.logger.info("{} local data is dirty :{}".format(stock_id, result))
         return result
 
     def initial_remote_data(self, stock_id) -> DataFrame:
