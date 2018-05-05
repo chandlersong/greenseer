@@ -202,7 +202,7 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
         pass
 
     @abc.abstractmethod
-    def get_stock_first_day(self, stock_id):
+    def get_stock_first_day(self, stock_id) -> datetime:
         pass
 
     def check_data_dirty(self, stock_id, local_data: DataFrame):
@@ -222,8 +222,8 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
         return self.load_data_by_period(stock_id)
 
     def load_data_by_period(self, stock_id):
-        period_start_date = datetime.strptime(self.get_stock_first_day(stock_id), '%Y%m%d')
-        end = datetime.now()
+        period_start_date = self.get_stock_first_day(stock_id)
+        end = datetime.today()
         self.logger.info("start to date: %s" % period_start_date)
         time.sleep(self.random_sleep_seconds())
         result = []

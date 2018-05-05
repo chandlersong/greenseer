@@ -27,3 +27,7 @@ setup(
     description='just a toll to analysis stock market. a junior developer play'
 )
 
+"""
+need freezegun for test
+pip install freezegun
+"""

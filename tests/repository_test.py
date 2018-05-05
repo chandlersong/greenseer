@@ -1,12 +1,13 @@
 import os
 import shutil
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from logging.config import fileConfig
-from unittest import TestCase
-from unittest.mock import MagicMock, Mock
+from unittest import TestCase, mock
+from unittest.mock import MagicMock, Mock, call
 
 import pandas as pd
+from freezegun import freeze_time
 from numpy.matlib import randn
 from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
@@ -261,6 +262,39 @@ class TestTimeSeriesRemoteFetcher(TestCase):
 
         assert_frame_equal(self.__remote_data,
                            self.fetcher.load_remote(TEST_STOCK_ID, self.__start_date, self.__end_date))
+
+    def test_load_data_by_period_success(self):
+        day_gap = 365
+        first_day = datetime.now() - timedelta(days=(day_gap + 100))  # make sure remote will be load twice
+        self.fetcher.get_stock_first_day = Mock(return_value=first_day)
+        self.fetcher.random_fetch_days = Mock(return_value=timedelta(day_gap))
+        self.fetcher.load_remote = Mock(side_effect=[self.__local_data, self.__remote_data])
+        self.fetcher.random_sleep_seconds = Mock(return_value=0)
+
+        expected = pd.concat([self.__local_data, self.__remote_data]).sort_index()
+
+        actual = self.fetcher.load_data_by_period(TEST_STOCK_ID)
+
+        assert_frame_equal(expected, actual)
+
+    @freeze_time("2018-05-05")
+    def test_load_data_by_period_data_calculate(self):
+        day_gap = 365
+        now = datetime.today()
+        first_day = now - timedelta(days=(day_gap + 100))  # make sure remote will be load twice
+        self.fetcher.get_stock_first_day = Mock(return_value=first_day)
+        self.fetcher.random_fetch_days = Mock(return_value=timedelta(day_gap))
+        self.fetcher.load_remote = Mock(side_effect=[self.__local_data, self.__remote_data])
+        self.fetcher.random_sleep_seconds = Mock(return_value=0)
+
+        self.fetcher.load_data_by_period(TEST_STOCK_ID)
+
+        first_period_end = first_day + timedelta(day_gap)
+        calls = [
+            call(TEST_STOCK_ID, first_day, first_period_end),
+            call(TEST_STOCK_ID, first_period_end + timedelta(days=1), now),
+        ]
+        self.fetcher.load_remote.assert_has_calls(calls, any_order=True)
 
 
 if __name__ == '__main__':

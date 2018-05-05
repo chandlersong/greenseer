@@ -25,8 +25,8 @@ class TuShareHDataFetcher(TimeSeriesRemoteFetcher):
         return self.remote_source(stock_id, start=start_date.strftime(DailyPriceRepository.DEFAULT_DATE_FORMAT),
                                   end=end_date.strftime(DailyPriceRepository.DEFAULT_DATE_FORMAT), autype='hfq')
 
-    def get_stock_first_day(self, stock_id):
-        return str(ts.get_stock_basics().loc[stock_id]['timeToMarket'])
+    def get_stock_first_day(self, stock_id) -> datetime:
+        return datetime.strptime(str(ts.get_stock_basics().loc[stock_id]['timeToMarket']), '%Y%m%d')
 
 
 class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
