@@ -1,6 +1,7 @@
 import os
 import shutil
 import unittest
+import numpy as np
 from datetime import datetime, timedelta
 from logging.config import fileConfig
 from unittest import TestCase, mock
@@ -15,7 +16,7 @@ from pandas.util.testing import assert_frame_equal
 from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
-    read_compression_data_to_dataframe, read_sina_600096_test_data_dirty
+    read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, TOTAL_STOCK_INFO
 
 TEST_STOCK_ID = "600096"
 
@@ -295,6 +296,20 @@ class TestTimeSeriesRemoteFetcher(TestCase):
             call(TEST_STOCK_ID, first_period_end + timedelta(days=1), now),
         ]
         self.fetcher.load_remote.assert_has_calls(calls, any_order=True)
+
+
+class TestFileLocalRepository(TestCase):
+
+    def read_china_total_stock_info_test(self):
+        """
+        it's a integration test. need to connect to internet
+        :return:
+        """
+        import tushare as ts
+        result = ts.get_stock_basics()
+        result.to_csv(TOTAL_STOCK_INFO, compression="gzip")
+
+        assert_frame_equal(result, read_china_total_stock_info())
 
 
 if __name__ == '__main__':
