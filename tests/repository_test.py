@@ -1,10 +1,9 @@
 import os
 import shutil
 import unittest
-import numpy as np
 from datetime import datetime, timedelta
 from logging.config import fileConfig
-from unittest import TestCase, mock
+from unittest import TestCase
 from unittest.mock import MagicMock, Mock, call
 
 import pandas as pd
@@ -13,10 +12,11 @@ from numpy.matlib import randn
 from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
-from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher
+from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher, FileSource
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
-    read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, TOTAL_STOCK_INFO
+    read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, \
+    TOTAL_STOCK_INFO_PATH
 
 TEST_STOCK_ID = "600096"
 
@@ -26,12 +26,13 @@ fileConfig('logging_config.ini')
 
 class TestFolderSource(TestCase):
     def setUp(self):
-        if os.path.exists(DEFAULT_FOLDER):
-            shutil.rmtree(DEFAULT_FOLDER)
-
         self.stock_id = TEST_STOCK_ID
         self.source = FolderSource(DEFAULT_FOLDER)
         self.expected_path = DEFAULT_FOLDER + '/600096.tar.gz'
+
+    def tearDown(self):
+        if os.path.exists(DEFAULT_FOLDER):
+            shutil.rmtree(DEFAULT_FOLDER)
 
     def test_initial_file_source(self):
         expect_folder = self.source.source_folder
@@ -298,7 +299,16 @@ class TestTimeSeriesRemoteFetcher(TestCase):
         self.fetcher.load_remote.assert_has_calls(calls, any_order=True)
 
 
-class TestFileLocalRepository(TestCase):
+class TestFileSource(TestCase):
+
+    def setUp(self):
+        self.__test_data = read_china_total_stock_info()
+        self.__source_path = DEFAULT_TEST_FOLDER + "/test_file_source.gz"
+        self.__source = FileSource(self.__source_path)
+
+    def tearDown(self):
+        if os.path.exists(self.__source_path):
+            os.remove(self.__source_path)
 
     def read_china_total_stock_info_test(self):
         """
@@ -307,9 +317,20 @@ class TestFileLocalRepository(TestCase):
         """
         import tushare as ts
         result = ts.get_stock_basics()
-        result.to_csv(TOTAL_STOCK_INFO, compression="gzip")
+        result.to_csv(TOTAL_STOCK_INFO_PATH, compression="gzip")
 
         assert_frame_equal(result, read_china_total_stock_info())
+
+    def test_initial_repository(self):
+        FileSource(TOTAL_STOCK_INFO_PATH)
+
+    def test_initial_repository_format_not_correct(self):
+        with self.assertRaises(OSError):
+            FileSource("__init__.py")
+
+    def test_initial_repository_empty(self):
+        FileSource(self.__source_path)
+        self.assertFalse(os.path.exists(self.__source_path))
 
 
 if __name__ == '__main__':

@@ -32,7 +32,7 @@ class LocalSource:
     """
 
     @abc.abstractmethod
-    def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
+    def load_data(self, *args, **kwargs) -> DataFrame:
         """
         load data from repository
         :param stock_id:
@@ -43,7 +43,7 @@ class LocalSource:
         pass
 
     @abc.abstractmethod
-    def initial_data(self, stock_id, df: DataFrame, *args, **kwargs):
+    def initial_data(self, df: DataFrame, *args, **kwargs):
         """
         initial data, there should be no data before
         :param stock_id:
@@ -55,7 +55,7 @@ class LocalSource:
         pass
 
     @abc.abstractmethod
-    def append_data(self, stock_id, new_df: DataFrame, *args, **kwargs):
+    def append_data(self, new_df: DataFrame, *args, **kwargs):
         """
         add new data to the tail
         :param stock_id:
@@ -67,7 +67,7 @@ class LocalSource:
         pass
 
     @abc.abstractmethod
-    def refresh_data(self, stock_id, df: DataFrame, *args, **kwargs):
+    def refresh_data(self, df: DataFrame, *args, **kwargs):
         """
         refresh data, this method will clean up all the old data
         if you want to keep old data, please use append_data
@@ -294,3 +294,33 @@ class FolderSource(LocalSource):
     def initial_data(self, stock_id, df: DataFrame):
         file_path = self.file_format.format(stock_id)
         df.to_csv(file_path, compression="gzip")
+
+
+class FileSource(LocalSource):
+    """
+    the source is a folder, it work like a table in the database
+    each record will be used as a file
+    """
+
+    logger = logging.getLogger()
+
+    def __init__(self, source_path):
+
+        if not os.path.exists(source_path):
+            self.logger.info("{} not exits".format(source_path))
+            return
+
+        self.__source = pd.read_csv(source_path, dtype={"code": np.str}, compression="gzip").set_index(
+            'code').sort_index()
+
+    def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
+        pass
+
+    def initial_data(self, df: DataFrame, *args, **kwargs):
+        pass
+
+    def append_data(self, new_df: DataFrame, *args, **kwargs):
+        pass
+
+    def refresh_data(self, df: DataFrame, *args, **kwargs):
+        pass
