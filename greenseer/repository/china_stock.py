@@ -48,8 +48,8 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
             self.logger.info("no need to append")
             return
         self.logger.info("next day is {}".format(next_day))
-        self.local_source.append_data(stock_id,
-                                      self.load_remote(stock_id, next_day, datetime.now()))
+        self.local_source.append_data(self.load_remote(stock_id, next_day, datetime.now())
+                                      , stock_id)
 
     def find_update_date(self, data: DataFrame, today=None):
         if today is None:

@@ -43,18 +43,6 @@ class LocalSource:
         pass
 
     @abc.abstractmethod
-    def initial_data(self, df: DataFrame, *args, **kwargs):
-        """
-        initial data, there should be no data before
-        :param stock_id:
-        :param df:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        pass
-
-    @abc.abstractmethod
     def append_data(self, new_df: DataFrame, *args, **kwargs):
         """
         add new data to the tail
@@ -144,7 +132,7 @@ class BaseRepository(RemoteFetcher):
             return local_data
 
     def save_or_update_local(self, stock_id, remote_data: DataFrame):
-        self.local_source.refresh_data(stock_id, remote_data)
+        self.local_source.refresh_data(remote_data, stock_id)
 
     @abc.abstractmethod
     def append_local_if_necessary(self, stock_id, local_data: DataFrame):
@@ -273,7 +261,7 @@ class FolderSource(LocalSource):
     def source_folder(self):
         return self.__source_folder
 
-    def refresh_data(self, stock_id, df: DataFrame, *args, **kwargs):
+    def refresh_data(self, df: DataFrame, stock_id, *args, **kwargs):
         file_path = self.file_format.format(stock_id)
         if os.path.exists(file_path):
             self.logger.info("{} exists and has been deleted".format(file_path))
@@ -281,8 +269,8 @@ class FolderSource(LocalSource):
 
         df.sort_index().to_csv(file_path, compression="gzip")
 
-    def append_data(self, stock_id, new_df: DataFrame, *args, **kwargs):
-        self.refresh_data(stock_id, self.load_data(stock_id).append(new_df))
+    def append_data(self, new_df: DataFrame, stock_id, *args, **kwargs):
+        self.refresh_data(self.load_data(stock_id).append(new_df), stock_id)
 
     def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
         try:
@@ -290,10 +278,6 @@ class FolderSource(LocalSource):
         except FileNotFoundError:
             self.logger.error("{} not exists in local".format(stock_id))
             return pd.DataFrame()
-
-    def initial_data(self, stock_id, df: DataFrame):
-        file_path = self.file_format.format(stock_id)
-        df.to_csv(file_path, compression="gzip")
 
 
 class FileSource(LocalSource):

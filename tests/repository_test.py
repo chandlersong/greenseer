@@ -41,27 +41,19 @@ class TestFolderSource(TestCase):
         # folder should be auto created
         self.assertTrue(os.path.exists(expect_folder))
 
-    def test_initial_data(self):
-        data = read_sina_600096_test_data()
-
-        self.source.initial_data(self.stock_id, data)
-
-        self.assertTrue(os.path.exists(self.expected_path))
-        assert_frame_equal(data, read_compression_data_to_dataframe(self.expected_path))
-
     def test_refresh_data_exist(self):
         previous_data = DataFrame(randn(5, 2), index=range(0, 10, 2), columns=list('AB'))
         previous_data.to_csv(self.expected_path, compression="gzip")
 
         data = read_sina_600096_test_data()
-        self.source.refresh_data(self.stock_id, data)
+        self.source.refresh_data(data, self.stock_id)
 
         self.assertTrue(os.path.exists(self.expected_path))
         assert_frame_equal(data, read_compression_data_to_dataframe(self.expected_path))
 
     def test_refresh_data_new(self):
         data = read_sina_600096_test_data()
-        self.source.refresh_data(self.stock_id, data)
+        self.source.refresh_data(data, self.stock_id)
 
         self.assertTrue(os.path.exists(self.expected_path))
         assert_frame_equal(data, read_compression_data_to_dataframe(self.expected_path))
@@ -91,7 +83,7 @@ class TestFolderSource(TestCase):
         data = read_sina_600096_test_data()
         data.to_csv(self.expected_path, compression='gzip')
 
-        self.source.append_data(self.stock_id, append_data)
+        self.source.append_data(append_data, self.stock_id)
 
         assert_frame_equal(data.append(append_data),
                            read_compression_data_to_dataframe(self.expected_path))
@@ -209,7 +201,7 @@ class TestChinaStockModuleDailyPriceRepository(TestCase):
 
         self.repository.append_local_if_necessary(TEST_STOCK_ID, self.__local_data)
 
-        self.mock_local_source.append_data.assert_called_once_with(TEST_STOCK_ID, self.__remote_data)
+        self.mock_local_source.append_data.assert_called_once_with(self.__remote_data, TEST_STOCK_ID)
         self.mock_remote_source.assert_called_once_with(TEST_STOCK_ID, start=next_day,
                                                         end=datetime.now().strftime(
                                                             DailyPriceRepository.DEFAULT_DATE_FORMAT), autype='hfq')
@@ -333,7 +325,7 @@ class TestFileSource(TestCase):
             FileSource("__init__.py")
 
     def test_initial_repository_empty(self):
-        source  = FileSource(self.__source_path)
+        source = FileSource(self.__source_path)
         self.assertFalse(os.path.exists(self.__source_path))
         self.assertFalse(source.cache_enabled)
 
