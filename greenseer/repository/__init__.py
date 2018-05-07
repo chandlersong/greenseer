@@ -305,13 +305,21 @@ class FileSource(LocalSource):
     logger = logging.getLogger()
 
     def __init__(self, source_path):
-
         if not os.path.exists(source_path):
             self.logger.info("{} not exits".format(source_path))
+            self.__cache = DataFrame()
             return
 
-        self.__source = pd.read_csv(source_path, dtype={"code": np.str}, compression="gzip").set_index(
-            'code').sort_index()
+        self.__cache = pd.read_csv(source_path, dtype={"code": np.str}, compression="gzip").set_index(
+            "code").sort_index()
+
+    @property
+    def cache(self):
+        return self.__cache
+
+    @property
+    def cache_enabled(self):
+        return not self.__cache.empty
 
     def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
         pass

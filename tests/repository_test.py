@@ -322,15 +322,20 @@ class TestFileSource(TestCase):
         assert_frame_equal(result, read_china_total_stock_info())
 
     def test_initial_repository(self):
-        FileSource(TOTAL_STOCK_INFO_PATH)
+        source = FileSource(TOTAL_STOCK_INFO_PATH)
+
+        assert_frame_equal(read_china_total_stock_info(), source.cache)
+
+        self.assertTrue(source.cache_enabled)
 
     def test_initial_repository_format_not_correct(self):
         with self.assertRaises(OSError):
             FileSource("__init__.py")
 
     def test_initial_repository_empty(self):
-        FileSource(self.__source_path)
+        source  = FileSource(self.__source_path)
         self.assertFalse(os.path.exists(self.__source_path))
+        self.assertFalse(source.cache_enabled)
 
 
 if __name__ == '__main__':
