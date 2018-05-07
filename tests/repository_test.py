@@ -329,6 +329,14 @@ class TestFileSource(TestCase):
         self.assertFalse(os.path.exists(self.__source_path))
         self.assertFalse(source.cache_enabled)
 
+    def test_append_data(self):
+        self.__source.refresh_data = Mock()
+
+        data = read_china_total_stock_info()
+        self.__source.append_data(data)
+
+        self.__source.refresh_data.assert_called_once_with(data)
+
 
 if __name__ == '__main__':
     unittest.main()

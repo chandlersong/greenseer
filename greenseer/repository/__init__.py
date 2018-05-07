@@ -308,11 +308,8 @@ class FileSource(LocalSource):
     def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
         pass
 
-    def initial_data(self, df: DataFrame, *args, **kwargs):
-        pass
-
     def append_data(self, new_df: DataFrame, *args, **kwargs):
-        pass
+        self.refresh_data(new_df)
 
     def refresh_data(self, df: DataFrame, *args, **kwargs):
         pass
