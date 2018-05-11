@@ -6,6 +6,7 @@ from logging.config import fileConfig
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock, call
 
+import numpy as np
 import pandas as pd
 from freezegun import freeze_time
 from numpy.matlib import randn
@@ -336,6 +337,27 @@ class TestFileSource(TestCase):
         self.__source.append_data(data)
 
         self.__source.refresh_data.assert_called_once_with(data)
+
+    def test_refresh_data(self):
+        self.__source.refresh_data(self.__test_data)
+
+        assert_frame_equal(self.__test_data, self.__source.cache)
+
+        actual = pd.read_csv(TOTAL_STOCK_INFO_PATH, dtype={"code": np.str}, compression="gzip").set_index(
+            'code').sort_index()
+        assert_frame_equal(self.__test_data, actual)
+
+    def test_refresh_data_exist(self):
+
+        DataFrame(randn(5, 2), index=range(0, 10, 2), columns=list('AB')).to_csv(self.__source_path, compression="gzip")
+
+        self.__source.refresh_data(self.__test_data)
+
+        assert_frame_equal(self.__test_data, self.__source.cache)
+
+        actual = pd.read_csv(TOTAL_STOCK_INFO_PATH, dtype={"code": np.str}, compression="gzip").set_index(
+            'code').sort_index()
+        assert_frame_equal(self.__test_data, actual)
 
 
 if __name__ == '__main__':

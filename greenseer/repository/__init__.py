@@ -289,6 +289,9 @@ class FileSource(LocalSource):
     logger = logging.getLogger()
 
     def __init__(self, source_path):
+
+        self.__source_path = source_path
+
         if not os.path.exists(source_path):
             self.logger.info("{} not exits".format(source_path))
             self.__cache = DataFrame()
@@ -312,4 +315,10 @@ class FileSource(LocalSource):
         self.refresh_data(new_df)
 
     def refresh_data(self, df: DataFrame, *args, **kwargs):
-        pass
+
+        if os.path.exists(self.__source_path):
+            self.logger.info("{} exits,has been removed".format(self.__source_path))
+            os.remove(self.__source_path)
+
+        df.to_csv(self.__source_path,compression="gzip")
+        self.__cache = df.copy()
