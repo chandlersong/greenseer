@@ -348,7 +348,6 @@ class TestFileSource(TestCase):
         assert_frame_equal(self.__test_data, actual)
 
     def test_refresh_data_exist(self):
-
         DataFrame(randn(5, 2), index=range(0, 10, 2), columns=list('AB')).to_csv(self.__source_path, compression="gzip")
 
         self.__source.refresh_data(self.__test_data)
@@ -358,6 +357,20 @@ class TestFileSource(TestCase):
         actual = pd.read_csv(TOTAL_STOCK_INFO_PATH, dtype={"code": np.str}, compression="gzip").set_index(
             'code').sort_index()
         assert_frame_equal(self.__test_data, actual)
+
+    def test_load_data(self):
+        stock_id = "600000"
+
+        data = read_china_total_stock_info()
+        expect = data.loc[[stock_id]]
+
+        self.__source.refresh_data(self.__test_data)
+
+        assert_frame_equal(expect, self.__source.load_data(stock_id))
+
+    def test_load_data_not_exist(self):
+
+        self.assertTrue(self.__source.load_data("600000").empty)
 
 
 if __name__ == '__main__':

@@ -309,7 +309,10 @@ class FileSource(LocalSource):
         return not self.__cache.empty
 
     def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
-        pass
+        try:
+            return self.cache.loc[[stock_id]]
+        except KeyError:
+            return DataFrame()
 
     def append_data(self, new_df: DataFrame, *args, **kwargs):
         self.refresh_data(new_df)
