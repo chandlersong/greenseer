@@ -7,7 +7,7 @@ import tushare as ts
 from pandas import DataFrame
 
 from greenseer.configuration import get_global_configuration
-from greenseer.repository import BaseRepository, LocalSource, FolderSource, TimeSeriesRemoteFetcher
+from greenseer.repository import BaseRepository, LocalSource, FolderSource, TimeSeriesRemoteFetcher, RemoteFetcher
 
 TU_SHARE_SINA_DAILY = {'amount': np.float64, 'volume': np.float64}
 
@@ -27,6 +27,36 @@ class TuShareHDataFetcher(TimeSeriesRemoteFetcher):
 
     def get_stock_first_day(self, stock_id) -> datetime:
         return datetime.strptime(str(ts.get_stock_basics().loc[stock_id]['timeToMarket']), '%Y%m%d')
+
+
+class TuShareStockBasicFetcher(RemoteFetcher):
+
+    def __init__(self):
+        self.__cache = None
+
+    @property
+    def cache(self):
+        return self.__cache
+
+    def initial_remote_data(self):
+        self.__cache = ts.get_stock_basics()
+        return self.__cache
+
+    def load_remote(self, *args, **kwargs):
+        if self.cache is None:
+            self.initial_remote_data()
+        return self.cache
+
+    def check_data_dirty(self, stock_id, local_data: DataFrame):
+        """
+        Becasue if check the data is dirty or not, it will need to load all the data from remote. so just
+        the system to refresh all the time
+
+        :param stock_id:
+        :param local_data:
+        :return:
+        """
+        return False
 
 
 class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):

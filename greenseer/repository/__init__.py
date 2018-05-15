@@ -173,9 +173,6 @@ class TimeSeriesRemoteFetcher(RemoteFetcher):
         self.logger.debug("generate remote fetch {} days".format(result))
         return timedelta(days=result)
 
-    def initial_remote_data(self, *args, **kwargs):
-        pass
-
     def load_remote(self, stock_id, start_date, end_date, *args, **kwargs):
         try:
             return self.do_load_remote(stock_id, start_date, end_date, *args, **kwargs)
@@ -323,5 +320,5 @@ class FileSource(LocalSource):
             self.logger.info("{} exits,has been removed".format(self.__source_path))
             os.remove(self.__source_path)
 
-        df.to_csv(self.__source_path,compression="gzip")
+        df.to_csv(self.__source_path, compression="gzip")
         self.__cache = df.copy()
