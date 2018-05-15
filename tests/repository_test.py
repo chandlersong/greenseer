@@ -14,7 +14,8 @@ from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
 from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher, FileSource
-from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher, TuShareStockBasicFetcher
+from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher, TuShareStockBasicFetcher, \
+    BasicInfoRepository
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, \
     TOTAL_STOCK_INFO_PATH
@@ -381,6 +382,7 @@ class TestTuShareStockBasicFetcher(TestCase):
         self.__dirty_data = DataFrame(
             {'open': [1, 2], 'high': [3, 4], 'close': [5, 6], 'low': [7, 8], 'volume': [9, 10], 'amount': [11, 12]},
             index=(pd.Index(pd.date_range('7/1/2017', periods=2), name='date')))
+        self.__stock_id = "600000"
 
     def test_initial_remote_data_refresh_cache(self, remote_method):
         self.assertIsNone(self.__fetcher.cache)
@@ -394,16 +396,30 @@ class TestTuShareStockBasicFetcher(TestCase):
         remote_method.return_value = self.__data.copy()
         self.__fetcher.initial_remote_data()
 
-        actual = self.__fetcher.load_remote()
-        assert_frame_equal(self.__data,actual)
+        actual = self.__fetcher.load_remote(self.__stock_id)
+        assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
 
     def test_load_remote_cache_not_exists(self, remote_method):
         remote_method.return_value = self.__data.copy()
         self.assertIsNone(self.__fetcher.cache)
 
-        actual = self.__fetcher.load_remote()
-        assert_frame_equal(self.__data,actual)
+        actual = self.__fetcher.load_remote(self.__stock_id)
+        assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
 
+
+class TestBaseInfoRepository(TestCase):
+
+    def setUp(self):
+        self.__repository = BasicInfoRepository()
+        self.__data = read_china_total_stock_info()
+        self.__stock_id = "600000"
+
+
+    def test_load_data(self):
+        self.__repository.load_remote = Mock(return_value=self.__data.loc[[self.__stock_id]])
+
+        actual = self.__repository.load_data(self.__stock_id)
+        assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
 
 if __name__ == '__main__':
     unittest.main()

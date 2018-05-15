@@ -7,7 +7,8 @@ import tushare as ts
 from pandas import DataFrame
 
 from greenseer.configuration import get_global_configuration
-from greenseer.repository import BaseRepository, LocalSource, FolderSource, TimeSeriesRemoteFetcher, RemoteFetcher
+from greenseer.repository import BaseRepository, LocalSource, FolderSource, TimeSeriesRemoteFetcher, RemoteFetcher, \
+    RemoteBaseRepository
 
 TU_SHARE_SINA_DAILY = {'amount': np.float64, 'volume': np.float64}
 
@@ -38,14 +39,20 @@ class TuShareStockBasicFetcher(RemoteFetcher):
     def cache(self):
         return self.__cache
 
+    @property
+    def all_stock_basic_info(self) -> DataFrame:
+        if self.cache is None:
+            self.initial_remote_data()
+        return self.cache
+
     def initial_remote_data(self):
         self.__cache = ts.get_stock_basics()
         return self.__cache
 
-    def load_remote(self, *args, **kwargs):
+    def load_remote(self, stock_id):
         if self.cache is None:
             self.initial_remote_data()
-        return self.cache
+        return self.cache.loc[[stock_id]]
 
     def check_data_dirty(self, stock_id, local_data: DataFrame):
         """
@@ -90,6 +97,10 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
             return None
 
         return last_date + self.ONE_DAY
+
+
+class BasicInfoRepository(RemoteBaseRepository, TuShareStockBasicFetcher):
+    pass
 
 
 def create_daily_price_repository(remote_source=None, local_source: LocalSource = None) -> DailyPriceRepository:

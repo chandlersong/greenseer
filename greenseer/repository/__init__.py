@@ -139,6 +139,16 @@ class BaseRepository(RemoteFetcher):
         pass
 
 
+class RemoteBaseRepository(BaseRepository):
+    logger = logging.getLogger("remoteBaseRepository")
+
+    def __init__(self):
+        BaseRepository.__init__(self, None)
+
+    def load_data(self, stock_id, force_local=False) -> DataFrame:
+        return self.load_remote(stock_id)
+
+
 class TimeSeriesRemoteFetcher(RemoteFetcher):
     logger = logging.getLogger()
 
