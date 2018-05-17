@@ -100,7 +100,12 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
 
 
 class BasicInfoRepository(RemoteBaseRepository, TuShareStockBasicFetcher):
-    pass
+
+    def __init__(self):
+        TuShareStockBasicFetcher.__init__(self)
+
+    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
+        pass
 
 
 def create_daily_price_repository(remote_source=None, local_source: LocalSource = None) -> DailyPriceRepository:
@@ -120,3 +125,10 @@ def create_daily_price_repository(remote_source=None, local_source: LocalSource 
                                 max_random_remote_fetch_days=global_config.get_int_value("china_stock_config",
                                                                                          "max_random_remote_fetch_days",
                                                                                          35))
+
+
+Gobal_BASIC_INFO_REPOSITORY = BasicInfoRepository()
+
+
+def get_gobal_basic_info_repository() -> Gobal_BASIC_INFO_REPOSITORY:
+    return Gobal_BASIC_INFO_REPOSITORY
