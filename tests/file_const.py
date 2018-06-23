@@ -1,7 +1,8 @@
 import tempfile
+from unittest.mock import MagicMock
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from pandas import DataFrame
 
 DEFAULT_TEST_FOLDER = tempfile.gettempdir() + "/greenseer_test"
@@ -10,6 +11,8 @@ SINA_600096_2017_6_21_TO_6_30 = "data/sina_600096_2017_6_21_to_6_30.gzip"
 SINA_600096_2017_6_21_TO_6_30_DIRTY = "data/sina_600096_2017_6_21_to_6_30_dirty.csv"
 
 TOTAL_STOCK_INFO_PATH = "data/china_tushare_total_stock.gzip"
+
+NETEASE_600096_ASSERT_REPORT = "data/600096_assert_report.gz"
 
 
 def read_sina_600096_test_data() -> DataFrame:
@@ -31,3 +34,15 @@ def read_data_to_dataframe(file_path_or_buf, compression='infer') -> DataFrame:
 
 def read_compression_data_to_dataframe(file_path_or_buf) -> DataFrame:
     return read_data_to_dataframe(file_path_or_buf, compression="gzip").sort_index()
+
+
+def read_600096_assert_reports() -> DataFrame:
+    return read_data_to_dataframe(NETEASE_600096_ASSERT_REPORT)
+
+
+def create_mock_request_urlopen(self, context="mock call"):
+    cm = MagicMock()
+    cm.getcode.return_value = 200
+    cm.read.return_value = context
+    cm.__enter__.return_value = cm
+    return cm

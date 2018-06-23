@@ -81,14 +81,32 @@ class RemoteFetcher:
 
     @abc.abstractmethod
     def initial_remote_data(self, *args, **kwargs):
+        """
+        initial data. for the first usage
+        :param args:
+        :param kwargs:
+        :return:
+        """
         pass
 
     @abc.abstractmethod
     def load_remote(self, *args, **kwargs):
+        """
+        load part of data,for update usage
+        :param args:
+        :param kwargs:
+        :return:
+        """
         pass
 
     @abc.abstractmethod
     def check_data_dirty(self, stock_id, local_data: DataFrame):
+        """
+        check data is dirty or not
+        :param stock_id:
+        :param local_data:
+        :return:
+        """
         pass
 
 
@@ -262,7 +280,7 @@ class FolderSource(LocalSource):
             os.makedirs(self.__source_folder, exist_ok=True)
         else:
             self.logger.info('%s exists' % self.__source_folder)
-        self.file_format = source_folder + "/{}.tar.gz"
+        self.file_format = source_folder + "/{}.gz"
 
     @property
     def source_folder(self):

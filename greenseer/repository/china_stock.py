@@ -1,8 +1,10 @@
 import logging
 import tempfile
 from datetime import datetime
+from urllib import request
 
 import numpy as np
+import pandas as pd
 import tushare as ts
 from pandas import DataFrame
 
@@ -99,6 +101,36 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
         return last_date + self.ONE_DAY
 
 
+class ChinaAssertRepository(BaseRepository):
+    INDEX_COL = 0
+
+    ZERO_NA_VALUE = 0
+
+    logger = logging.getLogger()
+
+    def __init__(self, local_repository):
+        BaseRepository.__init__(self, local_repository)
+        self.remote_path = 'http://quotes.money.163.com/service/zcfzb_{}.html'
+
+    def initial_remote_data(self, stock_id):
+        path = self.remote_path.format(stock_id)
+        self.logger.debug("file path is %s", path)
+        with request.urlopen(path) as web:
+            local = pd.read_csv(web, encoding='gb2312', na_values='--', index_col=ChinaAssertRepository.INDEX_COL)
+            return local.drop(local.columns[len(local.columns) - 1], axis=1).fillna(
+                ChinaAssertRepository.ZERO_NA_VALUE).apply(pd.to_numeric,
+                                                           errors='coerce')
+
+    def load_remote(self, *args, **kwargs):
+        pass
+
+    def check_data_dirty(self, stock_id, local_data: DataFrame):
+        return False;
+
+    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
+        pass
+
+
 class BasicInfoRepository(RemoteBaseRepository, TuShareStockBasicFetcher):
 
     def __init__(self):
@@ -132,3 +164,10 @@ Gobal_BASIC_INFO_REPOSITORY = BasicInfoRepository()
 
 def get_gobal_basic_info_repository() -> Gobal_BASIC_INFO_REPOSITORY:
     return Gobal_BASIC_INFO_REPOSITORY
+
+
+def create_china_assert_repository(local_source=None) -> ChinaAssertRepository:
+    if local_source is None:
+        local_source = FolderSource(tempfile.gettempdir() + "/greenseer/china_assert_reports")
+
+    return ChinaAssertRepository(local_source)

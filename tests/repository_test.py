@@ -15,7 +15,7 @@ from pandas.util.testing import assert_frame_equal
 
 from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher, FileSource
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher, TuShareStockBasicFetcher, \
-    BasicInfoRepository
+    BasicInfoRepository, ChinaAssertRepository
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, \
     TOTAL_STOCK_INFO_PATH
@@ -407,6 +407,16 @@ class TestTuShareStockBasicFetcher(TestCase):
         assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
 
 
+class TestChinaAssertRepository(TestCase):
+
+    def setUp(self):
+        self.mock_local_source = MagicMock(spec=LocalSource)
+        self.__repository = ChinaAssertRepository(self.mock_local_source)
+
+
+
+
+
 class TestBaseInfoRepository(TestCase):
 
     def setUp(self):
@@ -414,12 +424,12 @@ class TestBaseInfoRepository(TestCase):
         self.__data = read_china_total_stock_info()
         self.__stock_id = "600000"
 
-
     def test_load_data(self):
         self.__repository.load_remote = Mock(return_value=self.__data.loc[[self.__stock_id]])
 
         actual = self.__repository.load_data(self.__stock_id)
         assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
+
 
 if __name__ == '__main__':
     unittest.main()
