@@ -1,9 +1,6 @@
 import abc
 import logging
 import os
-import time
-from datetime import timedelta, datetime
-from random import randint
 
 import numpy as np
 import pandas as pd
@@ -70,14 +67,6 @@ class LocalSource:
 
 class RemoteFetcher:
     logger = logging.getLogger()
-
-    def __init__(self, remote_source):
-        self.__remote_source = remote_source
-        self.logger.info("remote source type is {}".format(remote_source.__name__))
-
-    @property
-    def remote_source(self):
-        return self.__remote_source
 
     @abc.abstractmethod
     def initial_remote_data(self, *args, **kwargs):
@@ -165,104 +154,6 @@ class RemoteBaseRepository(BaseRepository):
 
     def load_data(self, stock_id, force_local=False) -> DataFrame:
         return self.load_remote(stock_id)
-
-
-class TimeSeriesRemoteFetcher(RemoteFetcher):
-    logger = logging.getLogger()
-
-    ONE_DAY = timedelta(days=1)
-
-    def __init__(self, remote_source, sleep_seconds=10, max_random_sleep_seconds=20,
-                 remote_fetch_days=365, max_random_remote_fetch_days=35,
-                 block_sleep_seconds=3 * 60):
-        RemoteFetcher.__init__(self, remote_source)
-        self.__sleep_seconds = sleep_seconds
-        self.__remote_fetch_days = remote_fetch_days
-        self.__max_random_sleep_seconds = max_random_sleep_seconds
-        self.__max_random_remote_fetch_days = max_random_remote_fetch_days
-        self.__block_sleep_seconds = block_sleep_seconds
-
-        self.logger.info("block sleep seconds is {}".format(block_sleep_seconds))
-
-        self.logger.info("sleep seconds is between {} to {}".format(self.__sleep_seconds,
-                                                                    self.__sleep_seconds +
-                                                                    self.__max_random_sleep_seconds))
-        self.logger.info("fetch days is between  {} to {} ".format(self.__remote_fetch_days,
-                                                                   self.__remote_fetch_days +
-                                                                   self.__max_random_remote_fetch_days))
-
-    def random_sleep_seconds(self):
-        result = self.__sleep_seconds + randint(0, self.__max_random_sleep_seconds)
-        self.logger.debug("generate sleep {} seconds".format(result))
-        return result
-
-    def random_fetch_days(self):
-        result = self.__remote_fetch_days + randint(0, self.__max_random_remote_fetch_days)
-        self.logger.debug("generate remote fetch {} days".format(result))
-        return timedelta(days=result)
-
-    def load_remote(self, stock_id, start_date, end_date, *args, **kwargs):
-        try:
-            return self.do_load_remote(stock_id, start_date, end_date, *args, **kwargs)
-        except IOError:
-            self.logger.error("has been blocked,will sleep 3 minutes")
-            time.sleep(self.__block_sleep_seconds)
-            self.logger.error("finish sleep")
-            return self.load_remote(stock_id, start_date, end_date)
-
-    @abc.abstractmethod
-    def do_load_remote(self, stock_id, start_date, end_date, *args, **kwargs):
-        pass
-
-    @abc.abstractmethod
-    def get_stock_first_day(self, stock_id) -> datetime:
-        pass
-
-    def check_data_dirty(self, stock_id, local_data: DataFrame):
-        latest_record = local_data.tail(1)
-
-        if latest_record.empty:
-            return True
-
-        last_date = latest_record.index[0]
-        remote_record = self.load_remote(stock_id, last_date, last_date)
-
-        result = not latest_record.sort_index(axis=1).equals(remote_record.sort_index(axis=1))
-        self.logger.info("{} local data is dirty :{}".format(stock_id, result))
-        return result
-
-    def initial_remote_data(self, stock_id) -> DataFrame:
-        return self.load_data_by_period(stock_id)
-
-    def load_data_by_period(self, stock_id):
-        period_start_date = self.get_stock_first_day(stock_id)
-        end = datetime.today()
-        self.logger.info("start to date: %s" % period_start_date)
-        time.sleep(self.random_sleep_seconds())
-        result = []
-        while period_start_date < end:
-
-            period_end_date = period_start_date + self.random_fetch_days()
-            if period_end_date >= end:
-                period_end_date = end
-
-            df = self.load_remote(stock_id, period_start_date, period_end_date)
-
-            if df is not None and not df.empty:
-                result.append(df)
-
-                self.logger.info(
-                    "load prices:from {} to {},records shape:{}".format(period_start_date, period_end_date,
-                                                                        df.shape))
-            period_start_date = period_end_date + TimeSeriesRemoteFetcher.ONE_DAY
-            # avoid be block
-            time.sleep(self.random_sleep_seconds())
-
-        self.logger.info("finish fetch stock prices: %s" % stock_id)
-        if result:  # result is not empty
-            return pd.concat(result).sort_index()
-        else:
-            return pd.DataFrame()
 
 
 class FolderSource(LocalSource):

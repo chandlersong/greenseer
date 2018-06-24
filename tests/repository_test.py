@@ -8,14 +8,15 @@ from unittest.mock import MagicMock, Mock, call, patch
 
 import numpy as np
 import pandas as pd
+import tushare
 from freezegun import freeze_time
 from numpy.matlib import randn
 from pandas import DataFrame
 from pandas.util.testing import assert_frame_equal
 
-from greenseer.repository import FolderSource, LocalSource, BaseRepository, TimeSeriesRemoteFetcher, FileSource
+from greenseer.repository import FolderSource, LocalSource, BaseRepository, FileSource
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher, TuShareStockBasicFetcher, \
-    BasicInfoRepository, ChinaAssertRepository
+    BasicInfoRepository, ChinaAssertRepository, TimeSeriesRemoteFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, \
     TOTAL_STOCK_INFO_PATH
@@ -377,24 +378,17 @@ class TestFileSource(TestCase):
 class TestTuShareStockBasicFetcher(TestCase):
 
     def setUp(self):
-        self.__fetcher = TuShareStockBasicFetcher()
+        self.__fetcher = TuShareStockBasicFetcher(tushare.get_stock_basics)
         self.__data = read_china_total_stock_info()
         self.__dirty_data = DataFrame(
             {'open': [1, 2], 'high': [3, 4], 'close': [5, 6], 'low': [7, 8], 'volume': [9, 10], 'amount': [11, 12]},
             index=(pd.Index(pd.date_range('7/1/2017', periods=2), name='date')))
         self.__stock_id = "600000"
 
-    def test_initial_remote_data_refresh_cache(self, remote_method):
-        self.assertIsNone(self.__fetcher.cache)
-        remote_method.return_value = self.__data.copy()
 
-        self.__fetcher.initial_remote_data()
-
-        assert_frame_equal(self.__data, self.__fetcher.cache)
 
     def test_load_remote_cache_exists(self, remote_method):
-        remote_method.return_value = self.__data.copy()
-        self.__fetcher.initial_remote_data()
+        self.__fetcher.initial_remote_data = Mock(return_value=self.__data.copy())
 
         actual = self.__fetcher.load_remote(self.__stock_id)
         assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
@@ -403,6 +397,7 @@ class TestTuShareStockBasicFetcher(TestCase):
         remote_method.return_value = self.__data.copy()
         self.assertIsNone(self.__fetcher.cache)
 
+        self.__fetcher.initial_remote_data = Mock(return_value=self.__data.copy())
         actual = self.__fetcher.load_remote(self.__stock_id)
         assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
 
