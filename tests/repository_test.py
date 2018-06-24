@@ -30,7 +30,7 @@ class TestFolderSource(TestCase):
     def setUp(self):
         self.stock_id = TEST_STOCK_ID
         self.source = FolderSource(DEFAULT_FOLDER)
-        self.expected_path = DEFAULT_FOLDER + '/600096.tar.gz'
+        self.expected_path = DEFAULT_FOLDER + '/600096.gz'
 
     def tearDown(self):
         if os.path.exists(DEFAULT_FOLDER):
