@@ -242,11 +242,12 @@ class ChinaAssertRepository(BaseRepository):
                 ChinaAssertRepository.ZERO_NA_VALUE).apply(pd.to_numeric,
                                                            errors='coerce')
 
-    def load_remote(self, *args, **kwargs):
-        pass
+    def load_remote(self, stock_id):
+        return self.initial_remote_data(stock_id)
 
     def check_data_dirty(self, stock_id, local_data: DataFrame):
-        return False;
+        lastest_data = datetime.strptime(local_data.columns[0], '%Y-%m-%d')
+        return (datetime.now() - lastest_data).days > 100
 
     def append_local_if_necessary(self, stock_id, local_data: DataFrame):
         pass

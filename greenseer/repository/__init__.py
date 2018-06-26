@@ -183,7 +183,7 @@ class FolderSource(LocalSource):
             self.logger.info("{} exists and has been deleted".format(file_path))
             os.remove(file_path)
 
-        df.sort_index().to_csv(file_path, compression="gzip")
+        df.sort_index().to_csv(file_path, encoding="utf-8", compression="gzip")
 
     def append_data(self, new_df: DataFrame, stock_id, *args, **kwargs):
         self.refresh_data(self.load_data(stock_id).append(new_df), stock_id)

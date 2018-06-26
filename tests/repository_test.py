@@ -405,7 +405,7 @@ class TestChinaAssertRepository(TestCase):
     def setUp(self):
         self.mock_local_source = MagicMock(spec=LocalSource)
         self.__repository = ChinaAssertRepository(self.mock_local_source)
-        self.__original_data = pd.read_csv("data/600096.origin.csv", encoding='gb2312', na_values='--',
+        self.__original_data = pd.read_csv("data/600096.origin.csv", na_values='--',
                                            index_col=0)
 
     @patch("pandas.read_csv")
@@ -415,6 +415,13 @@ class TestChinaAssertRepository(TestCase):
         pandas_read_csv.return_value = self.__original_data
         assert_frame_equal(read_600096_assert_reports(), self.__repository.initial_remote_data("600096"))
 
+    @freeze_time("2018-05-05")
+    def test_check_data_dirty_clean(self):
+        self.assertFalse(self.__repository.check_data_dirty("600096", self.__original_data))
+
+    @freeze_time("2019-05-05")
+    def test_check_data_dirty_dirty(self):
+        self.assertTrue(self.__repository.check_data_dirty("600096", self.__original_data))
 
 class TestBaseInfoRepository(TestCase):
 
