@@ -37,10 +37,12 @@ def read_compression_data_to_dataframe(file_path_or_buf) -> DataFrame:
 
 
 def read_600096_assert_reports() -> DataFrame:
-    return read_data_to_dataframe(NETEASE_600096_ASSERT_REPORT)
+    result = pd.read_csv(NETEASE_600096_ASSERT_REPORT, index_col=0, parse_dates=True)
+    return result.drop(result.columns[len(result.columns) - 1], axis=1).fillna(0).apply(pd.to_numeric,
+                                                                                        errors='coerce')
 
 
-def create_mock_request_urlopen(self, context="mock call"):
+def create_mock_request_urlopen(context="mock call"):
     cm = MagicMock()
     cm.getcode.return_value = 200
     cm.read.return_value = context

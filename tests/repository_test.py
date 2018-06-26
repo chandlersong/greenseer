@@ -19,7 +19,7 @@ from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataF
     BasicInfoRepository, ChinaAssertRepository, TimeSeriesRemoteFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, \
-    TOTAL_STOCK_INFO_PATH
+    TOTAL_STOCK_INFO_PATH, create_mock_request_urlopen, read_600096_assert_reports
 
 TEST_STOCK_ID = "600096"
 
@@ -385,8 +385,6 @@ class TestTuShareStockBasicFetcher(TestCase):
             index=(pd.Index(pd.date_range('7/1/2017', periods=2), name='date')))
         self.__stock_id = "600000"
 
-
-
     def test_load_remote_cache_exists(self, remote_method):
         self.__fetcher.initial_remote_data = Mock(return_value=self.__data.copy())
 
@@ -407,9 +405,15 @@ class TestChinaAssertRepository(TestCase):
     def setUp(self):
         self.mock_local_source = MagicMock(spec=LocalSource)
         self.__repository = ChinaAssertRepository(self.mock_local_source)
+        self.__original_data = pd.read_csv("data/600096.origin.csv", encoding='gb2312', na_values='--',
+                                           index_col=0)
 
-
-
+    @patch("pandas.read_csv")
+    @patch("urllib.request.urlopen")
+    def test_initial_remote_data(self, request_urlopen, pandas_read_csv):
+        request_urlopen.return_value = create_mock_request_urlopen("data/600096.origin.csv")
+        pandas_read_csv.return_value = self.__original_data
+        assert_frame_equal(read_600096_assert_reports(), self.__repository.initial_remote_data("600096"))
 
 
 class TestBaseInfoRepository(TestCase):
