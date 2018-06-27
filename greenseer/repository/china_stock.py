@@ -208,33 +208,14 @@ class DailyPriceRepository(BaseRepository, TuShareHDataFetcher):
         return last_date + self.ONE_DAY
 
 
-class ChinaAssertRepository(BaseRepository):
-    INDEX_COL = 0
+class NetEaseRemoteFetcher(RemoteFetcher):
 
-    ZERO_NA_VALUE = 0
-
-    logger = logging.getLogger()
-
-    def __init__(self, local_repository):
-        BaseRepository.__init__(self, local_repository)
-        self.remote_path = 'http://quotes.money.163.com/service/zcfzb_{}.html'
-
-        self.__check_clean_cache = None
-
-    @property
-    def check_clean_cache(self):
-        '''
-        In some case, when to check data is dirty or not, will totally refresh the data. so use it to cache.
-        :return:
-        '''
-        return self.__remote_source
-
-    @check_clean_cache.setter
-    def set_check_clean_cache(self, cache: DataFrame):
-        self.__check_clean_cache = cache
+    def __init__(self, remote_path_format):
+        self.__remote_path_format = remote_path_format
+        self.logger.debug("remote path format is %s", remote_path_format)
 
     def initial_remote_data(self, stock_id):
-        path = self.remote_path.format(stock_id)
+        path = self.__remote_path_format.format(stock_id)
         self.logger.debug("file path is %s", path)
         with request.urlopen(path) as web:
             local = pd.read_csv(web, encoding='gb2312', na_values='--', index_col=ChinaAssertRepository.INDEX_COL)
@@ -248,6 +229,18 @@ class ChinaAssertRepository(BaseRepository):
     def check_data_dirty(self, stock_id, local_data: DataFrame):
         lastest_data = datetime.strptime(local_data.columns[0], '%Y-%m-%d')
         return (datetime.now() - lastest_data).days > 100
+
+
+class ChinaAssertRepository(BaseRepository, NetEaseRemoteFetcher):
+    INDEX_COL = 0
+
+    ZERO_NA_VALUE = 0
+
+    logger = logging.getLogger()
+
+    def __init__(self, local_repository):
+        BaseRepository.__init__(self, local_repository)
+        NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/zcfzb_{}.html')
 
     def append_local_if_necessary(self, stock_id, local_data: DataFrame):
         pass

@@ -16,7 +16,7 @@ from pandas.util.testing import assert_frame_equal
 
 from greenseer.repository import FolderSource, LocalSource, BaseRepository, FileSource
 from greenseer.repository.china_stock import DailyPriceRepository, TuShareHDataFetcher, TuShareStockBasicFetcher, \
-    BasicInfoRepository, ChinaAssertRepository, TimeSeriesRemoteFetcher
+    BasicInfoRepository, TimeSeriesRemoteFetcher, NetEaseRemoteFetcher
 from tests.file_const import DEFAULT_TEST_FOLDER, read_sina_600096_test_data, \
     read_compression_data_to_dataframe, read_sina_600096_test_data_dirty, read_china_total_stock_info, \
     TOTAL_STOCK_INFO_PATH, create_mock_request_urlopen, read_600096_assert_reports
@@ -400,11 +400,10 @@ class TestTuShareStockBasicFetcher(TestCase):
         assert_frame_equal(self.__data.loc[[self.__stock_id]], actual)
 
 
-class TestChinaAssertRepository(TestCase):
-
+class NetEaseRemoteFetcherTest(TestCase):
     def setUp(self):
         self.mock_local_source = MagicMock(spec=LocalSource)
-        self.__repository = ChinaAssertRepository(self.mock_local_source)
+        self.__repository = NetEaseRemoteFetcher("mock_path")
         self.__original_data = pd.read_csv("data/600096.origin.csv", na_values='--',
                                            index_col=0)
 
@@ -422,6 +421,7 @@ class TestChinaAssertRepository(TestCase):
     @freeze_time("2019-05-05")
     def test_check_data_dirty_dirty(self):
         self.assertTrue(self.__repository.check_data_dirty("600096", self.__original_data))
+
 
 class TestBaseInfoRepository(TestCase):
 
