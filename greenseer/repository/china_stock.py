@@ -246,6 +246,36 @@ class ChinaAssertRepository(BaseRepository, NetEaseRemoteFetcher):
         pass
 
 
+class ChinaCashRepository(BaseRepository, NetEaseRemoteFetcher):
+    INDEX_COL = 0
+
+    ZERO_NA_VALUE = 0
+
+    logger = logging.getLogger()
+
+    def __init__(self, local_repository):
+        BaseRepository.__init__(self, local_repository)
+        NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/xjllb_{}.html')
+
+    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
+        pass
+
+
+class ChinaIncomeRepository(BaseRepository, NetEaseRemoteFetcher):
+    INDEX_COL = 0
+
+    ZERO_NA_VALUE = 0
+
+    logger = logging.getLogger()
+
+    def __init__(self, local_repository):
+        BaseRepository.__init__(self, local_repository)
+        NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/lrb_{}.html')
+
+    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
+        pass
+
+
 class BasicInfoRepository(RemoteBaseRepository, TuShareStockBasicFetcher):
 
     def __init__(self):
@@ -285,8 +315,22 @@ def get_gobal_basic_info_repository() -> Gobal_BASIC_INFO_REPOSITORY:
     return Gobal_BASIC_INFO_REPOSITORY
 
 
-def create_china_assert_repository(local_source=None) -> ChinaAssertRepository:
+def create_china_stock_assert_repository(local_source=None) -> ChinaAssertRepository:
     if local_source is None:
         local_source = FolderSource(tempfile.gettempdir() + "/greenseer/china_assert_reports")
 
     return ChinaAssertRepository(local_source)
+
+
+def create_china_stock_cash_repository(local_source=None) -> ChinaAssertRepository:
+    if local_source is None:
+        local_source = FolderSource(tempfile.gettempdir() + "/greenseer/china_cash_reports")
+
+    return ChinaCashRepository(local_source)
+
+
+def create_china_stock_income_repository(local_source=None) -> ChinaAssertRepository:
+    if local_source is None:
+        local_source = FolderSource(tempfile.gettempdir() + "/greenseer/china_income_reports")
+
+    return ChinaIncomeRepository(local_source)
