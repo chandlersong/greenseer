@@ -185,3 +185,17 @@
 2018-04-21 00:14:17,655 - root - INFO - china_stock : 114 - load prices:from 2017-05-27 00:00:00 to 2018-04-21 00:02:42.769854,records shape:(220, 6)
 2018-04-21 00:14:17,656 - root - DEBUG - china_stock : 42 - generate sleep 7 seconds
 2018-04-21 00:14:24,662 - root - INFO - china_stock : 125 - finish fetch stock prices: 600097
+2020-03-18 21:37:43,223 - root - INFO - __init__ : 144 - reportData/greenseer/china_assert_reports not exists,auto create!!!
+2020-03-18 21:37:43,223 - root - DEBUG - china_stock : 67 - remote path format is http://quotes.money.163.com/service/zcfzb_{}.html
+2020-03-18 21:37:43,224 - root - ERROR - __init__ : 166 - 600096 not exists in local
+2020-03-18 21:37:43,225 - root - INFO - __init__ : 117 - 600096 is empty, local data will be refresh
+2020-03-18 21:37:43,225 - root - DEBUG - china_stock : 71 - file path is http://quotes.money.163.com/service/zcfzb_600096.html
+2020-03-18 21:37:50,264 - root - INFO - __init__ : 147 - reportData/greenseer/china_assert_reports exists
+2020-03-18 21:37:50,264 - root - DEBUG - china_stock : 67 - remote path format is http://quotes.money.163.com/service/zcfzb_{}.html
+2020-03-18 21:41:53,413 - root - INFO - __init__ : 147 - reportData/greenseer/china_assert_reports exists
+2020-03-18 21:41:53,413 - root - DEBUG - china_stock : 67 - remote path format is http://quotes.money.163.com/service/zcfzb_{}.html
+2020-03-18 21:42:30,692 - root - INFO - __init__ : 101 - reportData/greenseer/china_assert_reports exists
+2020-03-18 21:42:30,692 - root - DEBUG - china_stock : 67 - remote path format is http://quotes.money.163.com/service/zcfzb_{}.html
+2020-03-18 21:43:24,580 - root - INFO - __init__ : 156 - 600096 is empty, local data will be refresh
+2020-03-18 21:43:24,580 - root - DEBUG - china_stock : 71 - file path is http://quotes.money.163.com/service/zcfzb_600096.html
+2020-03-18 21:43:24,786 - root - INFO - __init__ : 111 - reportData/greenseer/china_assert_reports/600096.gz exists and has been deleted

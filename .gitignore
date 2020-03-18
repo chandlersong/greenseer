@@ -9,3 +9,4 @@ __pycache__
 /logs/greenseer.log
 greenseer/config.properties
 /greenseer/config.properties
+/jupyter/reportData/

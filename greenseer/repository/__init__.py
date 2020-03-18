@@ -13,6 +13,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
+#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 
 import abc
 import logging
@@ -84,52 +97,6 @@ class RemoteFetcher(ABC):
         pass
 
 
-class ReportRepository(RemoteFetcher):
-    '''
-    all the DataSource should be responsibility for one kind of data. like store price.
-    if a user need to load different data,it should provide different DataSource.
-
-    and DataSource should can persist data automatically. if it can't find read data from local data source, it will
-    load data from remote and persist data to local data source
-
-    Because remote dataStore will be different. so I will list all the common behavior at super class
-    and special behavior at  sub class.
-    the reason why not use a property is the special thing is a little simple now
-    '''
-
-    logger = logging.getLogger()
-
-    def __init__(self, local_source):
-        """
-
-        :param local_source:  it should be a source to persist data
-        """
-        self.__local_source = local_source
-
-    @property
-    def local_source(self) -> LocalSource:
-        return self.__local_source
-
-    def load_data(self, stock_id, force_remote=False) -> DataFrame:
-        # FUTUREIMPROVE:  add dirty check if possible.
-        local_data = self.local_source.load_data(stock_id).sort_index()
-        if local_data.empty or force_remote:
-            self.logger.info("{} is empty, local data will be refresh".format(stock_id))
-            remote_data = self.initial_remote_data(stock_id)
-            self.save_or_update_local(stock_id, remote_data)
-            return remote_data
-        else:
-            self.append_local_if_necessary(stock_id, local_data)
-            return local_data
-
-    def save_or_update_local(self, stock_id, remote_data: DataFrame):
-        self.local_source.refresh_data(remote_data, stock_id)
-
-    @abc.abstractmethod
-    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        pass
-
-
 class ReportLocalData(LocalSource):
     """
     the source is a folder, it work like a table in the database
@@ -168,3 +135,41 @@ class ReportLocalData(LocalSource):
 
     def exist(self, stock_id):
         return os.path.exists(self.file_format.format(stock_id))
+
+
+class ReportRepository(RemoteFetcher):
+    '''
+    all the DataSource should be responsibility for one kind of data. like store price.
+    if a user need to load different data,it should provide different DataSource.
+
+    and DataSource should can persist data automatically. if it can't find read data from local data source, it will
+    load data from remote and persist data to local data source
+
+    Because remote dataStore will be different. so I will list all the common behavior at super class
+    and special behavior at  sub class.
+    the reason why not use a property is the special thing is a little simple now
+    '''
+
+    logger = logging.getLogger()
+
+    def __init__(self, local_source: ReportLocalData):
+        """
+
+        :param local_source:  it should be a source to persist data
+        """
+        self.__local_source = local_source
+
+    @property
+    def local_source(self) -> LocalSource:
+        return self.__local_source
+
+    def load_data(self, stock_id, force_remote=False) -> DataFrame:
+        # FUTUREIMPROVE:  add dirty check if possible.
+        if self.local_source.exist(stock_id) or force_remote:
+            self.logger.info("{} is empty, local data will be refresh".format(stock_id))
+            remote_data = self.initial_remote_data(stock_id)
+            self.local_source.refresh_data(remote_data, stock_id)
+            return remote_data
+        else:
+
+            return self.__local_source.load_data(stock_id)
