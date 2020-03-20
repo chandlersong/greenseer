@@ -10,3 +10,5 @@ __pycache__
 greenseer/config.properties
 /greenseer/config.properties
 /jupyter/reportData/
+/jupyter/greenseer.log
+jupyter/greenseer.log
