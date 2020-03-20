@@ -13,6 +13,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
+#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 
 import logging
 from urllib import request
@@ -91,8 +104,8 @@ class ChinaAssertRepository(ReportRepository, NetEaseRemoteFetcher):
         ReportRepository.__init__(self, local_repository)
         NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/zcfzb_{}.html')
 
-    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        pass
+    def load_data(self, stock_id, force_remote=False) -> DataFrame:
+        return super().load_data(stock_id, force_remote).T
 
 
 class ChinaCashRepository(ReportRepository, NetEaseRemoteFetcher):
@@ -106,9 +119,6 @@ class ChinaCashRepository(ReportRepository, NetEaseRemoteFetcher):
         ReportRepository.__init__(self, local_repository)
         NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/xjllb_{}.html')
 
-    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        pass
-
 
 class ChinaIncomeRepository(ReportRepository, NetEaseRemoteFetcher):
     INDEX_COL = 0
@@ -121,18 +131,12 @@ class ChinaIncomeRepository(ReportRepository, NetEaseRemoteFetcher):
         ReportRepository.__init__(self, local_repository)
         NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/lrb_{}.html')
 
-    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        pass
-
 
 class BasicInfoRepository(TuShareStockBasicFetcher):
 
     def __init__(self):
         TuShareStockBasicFetcher.__init__(self, ts.get_stock_basics)
         self.__cache = None
-
-    def append_local_if_necessary(self, stock_id, local_data: DataFrame):
-        pass
 
     def initial_remote_data(self):
         self.__cache = ts.get_stock_basics()
