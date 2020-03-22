@@ -39,6 +39,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
+#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
@@ -75,10 +88,10 @@ class TestLoadByStockId(TestCase):
         reports = create_expected_data(repository)
 
         stock_id = "abc"
-        expected = pd.concat({stock_id: pd.concat(reports)})
+        expected = pd.concat({stock_id: pd.concat(reports, axis=1)})
         assert_frame_equal(expected, load_by_stock_id(stock_id, False, repository))
 
-    @patch("greenseer.dataset.china_dataset.delay_fetch_one_stock")
+    @patch("greenseer.dataset.china_dataset.load_by_stock_id")
     def test_load_multi_data(self, load_stock):
         repository = create_mock_china_repository()
         stock_id_a = "a"

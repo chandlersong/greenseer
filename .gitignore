@@ -12,3 +12,4 @@ greenseer/config.properties
 /jupyter/reportData/
 /jupyter/greenseer.log
 jupyter/greenseer.log
+reportData/

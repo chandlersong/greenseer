@@ -52,6 +52,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
+#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 
 import logging
 from urllib import request
@@ -130,8 +143,8 @@ class ChinaAssertRepository(ReportRepository, NetEaseRemoteFetcher):
         ReportRepository.__init__(self, local_repository)
         NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/zcfzb_{}.html')
 
-    def load_data(self, stock_id, force_remote=False) -> DataFrame:
-        return super().load_data(stock_id, force_remote).T
+    def load_data(self, stock_id, force_remote=False, remote_delay_max_seconds=None) -> DataFrame:
+        return super().load_data(stock_id, force_remote, remote_delay_max_seconds).T
 
 
 class ChinaCashRepository(ReportRepository, NetEaseRemoteFetcher):
@@ -145,8 +158,8 @@ class ChinaCashRepository(ReportRepository, NetEaseRemoteFetcher):
         ReportRepository.__init__(self, local_repository)
         NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/xjllb_{}.html')
 
-    def load_data(self, stock_id, force_remote=False) -> DataFrame:
-        return super().load_data(stock_id, force_remote).T
+    def load_data(self, stock_id, force_remote=False, remote_delay_max_seconds=None) -> DataFrame:
+        return super().load_data(stock_id, force_remote, remote_delay_max_seconds).T
 
 
 class ChinaIncomeRepository(ReportRepository, NetEaseRemoteFetcher):
@@ -160,8 +173,8 @@ class ChinaIncomeRepository(ReportRepository, NetEaseRemoteFetcher):
         ReportRepository.__init__(self, local_repository)
         NetEaseRemoteFetcher.__init__(self, 'http://quotes.money.163.com/service/lrb_{}.html')
 
-    def load_data(self, stock_id, force_remote=False) -> DataFrame:
-        return super().load_data(stock_id, force_remote).T
+    def load_data(self, stock_id, force_remote=False, remote_delay_max_seconds=None) -> DataFrame:
+        return super().load_data(stock_id, force_remote, remote_delay_max_seconds).T
 
 
 class BasicInfoRepository(TuShareStockBasicFetcher):

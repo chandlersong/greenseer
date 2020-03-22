@@ -52,10 +52,24 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
+#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 
 import abc
 import logging
 import os
+import time
 from abc import ABC
 
 import numpy as np
@@ -189,10 +203,14 @@ class ReportRepository(RemoteFetcher):
     def local_source(self) -> LocalSource:
         return self.__local_source
 
-    def load_data(self, stock_id, force_remote=False) -> DataFrame:
+    def load_data(self, stock_id, force_remote=False, remote_delay_max_seconds=None) -> DataFrame:
         # FUTUREIMPROVE:  add dirty check if possible.
         if not self.local_source.exist(stock_id) or force_remote:
             self.logger.info("{} is empty, local data will be refresh".format(stock_id))
+
+            if remote_delay_max_seconds is not None:  # avoid been banned by remote server
+                time.sleep(np.random.randint(0, remote_delay_max_seconds))
+
             remote_data = self.initial_remote_data(stock_id)
             self.local_source.refresh_data(remote_data, stock_id)
             return remote_data
