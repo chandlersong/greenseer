@@ -78,6 +78,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+#
+#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       https://www.gnu.org/licenses/gpl-3.0.html
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 from functools import partial
 
 import numpy as np
@@ -152,9 +165,7 @@ def load_by_stock_id(stock_id: str, force_remote=False, repository=_repository, 
                                                       remote_delay_max_seconds=max_sleep_seconds)
     cash_report = repository.cashReport.load_data(stock_id=stock_id, force_remote=force_remote,
                                                   remote_delay_max_seconds=max_sleep_seconds)
-    return pd.concat(
-        {stock_id: pd.concat({ASSERT_REPORT: assert_report, INCOME_REPORT: income_report, CASH_REPORT: cash_report},
-                             axis=1)})
+    return pd.concat({stock_id: pd.concat([assert_report, income_report, cash_report], axis=1)})
 
 
 fetch_one_report = partial(load_by_stock_id, repository=_repository)
