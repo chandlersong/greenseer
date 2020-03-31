@@ -80,9 +80,9 @@ from greenseer.dataset.china_dataset import load_by_stock_id, load_multi_data
 
 def create_mock_china_repository():
     result = MagicMock()
-    result.assertReport = MagicMock()
-    result.incomeReport = MagicMock()
-    result.cashReport = MagicMock()
+    result.assert_report = MagicMock()
+    result.income_report = MagicMock()
+    result.cash_report = MagicMock()
     return result
 
 
@@ -90,9 +90,9 @@ def create_expected_data(repository):
     assert_report = pd.DataFrame(np.random.random((3, 3)), index=range(0, 3))
     cash_report = pd.DataFrame(np.random.random((3, 3)), index=range(0, 3))
     income_report = pd.DataFrame(np.random.random((3, 3)), index=range(0, 3))
-    repository.assertReport.load_data = MagicMock(return_value=assert_report)
-    repository.incomeReport.load_data = MagicMock(return_value=income_report)
-    repository.cashReport.load_data = MagicMock(return_value=cash_report)
+    repository.assert_report.load_data = MagicMock(return_value=assert_report)
+    repository.income_report.load_data = MagicMock(return_value=income_report)
+    repository.cash_report.load_data = MagicMock(return_value=cash_report)
     return [assert_report, income_report, cash_report]
 
 
