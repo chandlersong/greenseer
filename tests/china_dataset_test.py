@@ -1,3 +1,4 @@
+
 #  Copyright (c) 2020 RumorMill (https://chandlersong.me)
 #  Copyright (c) 2020 chandler.song
 #
@@ -65,6 +66,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
 import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
