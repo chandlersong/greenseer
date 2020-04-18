@@ -18,6 +18,7 @@ from functools import partial
 
 import numpy as np
 import pandas as pd
+import tushare as ts
 from sklearn.model_selection import train_test_split
 
 from greenseer.repository.china_stock import create_china_stock_assert_repository, create_china_stock_income_repository, \
@@ -104,6 +105,32 @@ def load_multi_data(stock_ids: np.array, force_remote=False, repository=_reposit
     return pd.concat([load_by_stock_id(stock, force_remote, repository, max_sleep_seconds) for stock in stock_ids])
 
 
+def compose_target(target_info: dict, repository=_repository) -> pd.DataFrame:
+    """
+    FUTUREIMPROVE: add a filer here. only return the stock id in the filter
+
+    compose the target set. because stock can be divide according to many different reason, it only compose by
+    the information provide by users. and it will provide some default groups in other method˚
+
+    :param target_info: a dict which list the type of stock id. like {"st":[stockid1,stockid2]}
+    :param repository: repository
+    :return:
+    """
+    result = pd.DataFrame(index=repository.stock_info.index)
+
+    for key, value in target_info.items():
+        result[key] = result.index.isin(value).astype(int)
+
+    return result
+
+
+def list_default_targets() -> dict:
+    result = dict()
+    st_stocks = ts.get_st_classified()
+    result["st"] = st_stocks["code"].values
+    return result
+
+
 def load_by_stock_id(stock_id: str, force_remote=False, repository=_repository, max_sleep_seconds=9) -> pd.DataFrame:
     assert_report = repository.assert_report.load_data(stock_id=stock_id, force_remote=force_remote,
                                                        remote_delay_max_seconds=max_sleep_seconds)
@@ -117,3 +144,5 @@ def load_by_stock_id(stock_id: str, force_remote=False, repository=_repository, 
 fetch_one_report = partial(load_by_stock_id, repository=_repository)
 fetch_multi_report = partial(load_multi_data, repository=_repository)
 fetch_train_set = partial(load_train_data, repository=_repository)
+fetch_default_targets = partial(compose_target, target_info=list_default_targets(), repository=_repository)
+fetch_targets = partial(compose_target, repository=_repository)

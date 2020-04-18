@@ -1,58 +1,5 @@
-
 #  Copyright (c) 2020 RumorMill (https://chandlersong.me)
 #  Copyright (c) 2020 chandler.song
-#
-#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#       https://www.gnu.org/licenses/gpl-3.0.html
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
-#
-#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#       https://www.gnu.org/licenses/gpl-3.0.html
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
-#
-#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#       https://www.gnu.org/licenses/gpl-3.0.html
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
-#
-#  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#       https://www.gnu.org/licenses/gpl-3.0.html
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
 #
 #  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -75,7 +22,7 @@ import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from greenseer.dataset.china_dataset import load_by_stock_id, load_multi_data
+from greenseer.dataset.china_dataset import load_by_stock_id, load_multi_data, compose_target
 
 
 def create_mock_china_repository():
@@ -117,6 +64,17 @@ class TestLoadByStockId(TestCase):
 
         expected = pd.concat({stock_id_a: reports_a, stock_id_b: reports_b})
         assert_frame_equal(expected, load_multi_data([stock_id_a, stock_id_b]))
+
+    def test_compose_target_set(self):
+        repository = create_mock_china_repository()
+        repository.stock_info = pd.DataFrame(np.random.random((3, 3)), index=["a", "b", "c"])
+
+        expect = pd.DataFrame({
+            "x": [0, 1, 0],
+            "y": [1, 0, 0]
+        }, index=["a", "b", "c"])
+        actual = compose_target({"x": ["b"], "y": pd.Series("a")}, repository)
+        assert_frame_equal(expect, actual)
 
 
 if __name__ == '__main__':
