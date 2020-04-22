@@ -1,4 +1,3 @@
-
 #  Copyright (c) 2020 RumorMill (https://chandlersong.me)
 #  Copyright (c) 2020 chandler.song
 #
@@ -14,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+import codecs
 import unittest
 from logging.config import fileConfig
 from unittest import TestCase
@@ -23,6 +22,12 @@ from greenseer.repository.china_stock import get_global_basic_info_repository, \
     create_china_stock_assert_repository, create_china_stock_cash_repository, create_china_stock_income_repository
 
 fileConfig('logging_config.ini')
+
+
+def save_to_file(filename, headers):
+    with codecs.open(filename, 'w', "utf-8") as file:
+        for header in headers:
+            file.write(header + "\n")
 
 
 class TestChinaStock(TestCase):
@@ -36,13 +41,13 @@ class TestChinaStock(TestCase):
     def test_china_assert_repository(self):
         print("assert_report")
         assert_report = create_china_stock_assert_repository(base_folder="reportData").load_data("600096")
-        print(assert_report.shape)
+        save_to_file("assert_report.txt", assert_report.columns)
         print("cash report")
         cash = create_china_stock_cash_repository(base_folder="reportData").load_data("600096")
-        print(cash.shape)
+        save_to_file("cash_report.txt", cash.columns)
         print("income report")
         income_report = create_china_stock_income_repository(base_folder="reportData").load_data("600096")
-        print(income_report.shape)
+        save_to_file("income_report.txt", income_report.columns)
         print("finish")
 
 
