@@ -4,7 +4,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 from sklearn.preprocessing import FunctionTransformer
 
-from greenseer.preprocessing.transformers import regular_expression_index_filter
+from greenseer.preprocessing.transformers import regular_expression_index_filter, pick_annual_report_china
 
 
 class RegularExpressionIndexFilterTest(unittest.TestCase):
@@ -17,6 +17,22 @@ class RegularExpressionIndexFilterTest(unittest.TestCase):
         expected = pd.DataFrame({"x": [1, 3], "y": [4, 6]}, index=["a-bb", "a-cc"])
 
         assert_frame_equal(expected, transformer.transform(data))
+        self.assertEqual(True, True)
+
+    def test_pick_annual_report_china(self):
+        data = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [6, 7, 8, 9, 0]},
+                            index=(pd.MultiIndex.from_tuples(
+                                [("a", "2020-12-30"), ("a", "2020-09-30"), ("a", "2019-12-30"), ("b", "2020-12-30"),
+                                 ("b", "2020-09-30")])))
+
+        transformer = FunctionTransformer(func=pick_annual_report_china, validate=False)
+
+        expected = pd.DataFrame({"x": [1, 3, 4], "y": [6, 8, 9]},
+                                index=(pd.MultiIndex.from_tuples(
+                                    [("a", "2020-12-30"), ("a", "2019-12-30"), ("b", "2020-12-30")])))
+        transform = transformer.transform(data)
+        print(transform)
+        assert_frame_equal(expected, transform)
         self.assertEqual(True, True)
 
 
