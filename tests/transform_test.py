@@ -1,5 +1,4 @@
 import unittest
-from logging.config import fileConfig
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
