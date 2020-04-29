@@ -23,4 +23,4 @@ def regular_expression_column_filter(X: pd.DataFrame, patterns, level=None) -> p
     return X.drop(columns, axis=1, level=level)
 
 
-pick_annual_report_china = partial(regular_expression_index_filter, pattern=r'\d{4}-12-30', level=1)
+pick_annual_report_china = partial(regular_expression_index_filter, pattern=r'\d{4}-12-31', level=1)
