@@ -13,3 +13,6 @@ greenseer/config.properties
 /jupyter/greenseer.log
 jupyter/greenseer.log
 reportData/
+/demo/allReportsData/
+/demo/reportData/
+/draft/

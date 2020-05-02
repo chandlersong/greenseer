@@ -1,4 +1,4 @@
-#  Copyright (c) 2020 RumorMill (https://chandlersong.me)
+#  Copyright (c) 2020 GreenSeer (https://chandlersong.me)
 #  Copyright (c) 2020 chandler.song
 #
 #  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");

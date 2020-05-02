@@ -27,7 +27,7 @@ class TestDataSet(TestCase):
         repository = get_global_basic_info_repository()
         info = repository.load_data()
         print(info.index)
-        fetch_multi_report(info.index)
+        fetch_multi_report(info.index, max_sleep_seconds=5)
 
 
 if __name__ == '__main__':
