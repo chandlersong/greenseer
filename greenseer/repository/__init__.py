@@ -106,27 +106,27 @@ class ReportLocalData(LocalSource):
     def source_folder(self):
         return self.__source_folder
 
-    def refresh_data(self, df: DataFrame, stock_id):
-        file_path = self.file_format.format(stock_id)
+    def refresh_data(self, df: DataFrame, identify):
+        file_path = self.file_format.format(identify)
         if os.path.exists(file_path):
             self.logger.info("{} exists and has been deleted".format(file_path))
             os.remove(file_path)
 
         df.sort_index().to_csv(file_path, encoding="utf-8", compression="gzip")
 
-    def load_data(self, stock_id, *args, **kwargs) -> DataFrame:
+    def load_data(self, identify, *args, **kwargs) -> DataFrame:
         try:
-            return pd.read_csv(self.file_format.format(stock_id), index_col=0, compression="gzip", parse_dates=True)
+            return pd.read_csv(self.file_format.format(identify), index_col=0, compression="gzip", parse_dates=True)
         except FileNotFoundError:
-            self.logger.error("{} not exists in local".format(stock_id))
+            self.logger.error("{} not exists in local".format(identify))
             return pd.DataFrame()
 
     def exist(self, stock_id):
         return os.path.exists(self.file_format.format(stock_id))
 
 
-class ReportRepository(RemoteFetcher):
-    '''
+class ReportRepository(RemoteFetcher, ABC):
+    """
     all the DataSource should be responsibility for one kind of data. like store price.
     if a user need to load different data,it should provide different DataSource.
 
@@ -136,7 +136,7 @@ class ReportRepository(RemoteFetcher):
     Because remote dataStore will be different. so I will list all the common behavior at super class
     and special behavior at  sub class.
     the reason why not use a property is the special thing is a little simple now
-    '''
+    """
 
     logger = logging.getLogger()
 

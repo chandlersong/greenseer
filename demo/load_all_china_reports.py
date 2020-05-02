@@ -14,20 +14,18 @@
 #  limitations under the License.
 #
 import unittest
+from logging.config import fileConfig
 from unittest import TestCase
 
-from greenseer.dataset.china_dataset import fetch_multi_report, set_local_path
-from greenseer.repository.china_stock import get_global_basic_info_repository
+from greenseer.dataset.china_dataset import set_local_path, fetch_all
 
 
 class TestDataSet(TestCase):
 
     def test_load_all_stock(self):
+        fileConfig('logging_config.ini')
         set_local_path("allReportsData")
-        repository = get_global_basic_info_repository()
-        info = repository.load_data()
-        print(info.index)
-        fetch_multi_report(info.index, max_sleep_seconds=5)
+        fetch_all()
 
 
 if __name__ == '__main__':

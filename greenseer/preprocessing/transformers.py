@@ -19,7 +19,7 @@ from functools import partial
 
 import pandas as pd
 
-_logger = logging.getLogger("transformer")
+_logger = logging.getLogger()
 
 
 def regular_expression_index_filter(X: pd.DataFrame, pattern, level=None) -> pd.DataFrame:
