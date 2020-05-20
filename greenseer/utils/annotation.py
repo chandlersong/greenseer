@@ -20,7 +20,7 @@ class FunctionTransformerWrapper:
         self._validate = validate
 
     def __call__(self, original_func):
-        def wrap_function_transformer(*args, **kwargs):
+        def wrap_function_transformer(*args, **kwargs) -> FunctionTransformer:
             return FunctionTransformer(original_func, validate=self._validate, kw_args=kwargs)
 
         return wrap_function_transformer
