@@ -17,7 +17,6 @@ import unittest
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from sklearn.preprocessing import FunctionTransformer
 
 from greenseer.preprocessing.transformers import regular_expression_index_filter, pick_annual_report_china, \
     regular_expression_column_filter
@@ -27,8 +26,7 @@ class RegularExpressionIndexFilterTest(unittest.TestCase):
     def test_basic_case(self):
         data = pd.DataFrame({"x": [1, 2, 3], "y": [4, 5, 6]}, index=["a-bb", "c-aa", "a-cc"])
 
-        transformer = FunctionTransformer(func=regular_expression_index_filter, validate=False,
-                                          kw_args={"pattern": r'a-\w*'})
+        transformer = regular_expression_index_filter(pattern=r'a-\w*')
 
         expected = pd.DataFrame({"x": [3, 1], "y": [6, 4]}, index=["a-cc", "a-bb"])
 
@@ -41,7 +39,7 @@ class RegularExpressionIndexFilterTest(unittest.TestCase):
                                 [("a", "2020-12-31"), ("a", "2020-09-31"), ("a", "2019-12-31"), ("b", "2020-12-31"),
                                  ("b", "2020-09-31")])))
 
-        transformer = FunctionTransformer(func=pick_annual_report_china, validate=False)
+        transformer = pick_annual_report_china()
 
         expected = pd.DataFrame({"x": [4, 1, 3], "y": [9, 6, 8]},
                                 index=(pd.MultiIndex.from_tuples(
@@ -56,10 +54,9 @@ class RegularExpressionColumnFilterTest(unittest.TestCase):
     def test_basic_case(self):
         data = pd.DataFrame({"我爱钱": [1, 2, 3], "我喜欢古董": [4, 5, 6], "我恨没钱": [7, 8, 9]}, index=["a", "b", "c"])
 
-        transformer = FunctionTransformer(func=regular_expression_column_filter, validate=False,
-                                          kw_args={"patterns": [r'我爱', r'我喜欢']})
+        transformer = regular_expression_column_filter(patterns=[r'我爱', r'我喜欢'])
 
-        expected = pd.DataFrame({"我爱钱": [3, 2, 1], "我喜欢古董": [6, 5, 4]}, index=["c","b", "a"])
+        expected = pd.DataFrame({"我爱钱": [3, 2, 1], "我喜欢古董": [6, 5, 4]}, index=["c", "b", "a"])
 
         assert_frame_equal(expected, transformer.transform(data))
         self.assertEqual(True, True)
