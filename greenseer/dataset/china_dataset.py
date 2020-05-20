@@ -155,13 +155,14 @@ def __load_all_locally() -> pd.DataFrame:
     return _local_all_reports_repo.load_data(_ALL_REPORTS_NAME)
 
 
-def compose_target(target_info: dict, repository=_repository) -> pd.DataFrame:
+def compose_target(target_info: dict, repository=_repository, level=None) -> pd.DataFrame:
     """
     FUTUREIMPROVE: add a filter here. only return the stock id in the filter
 
     compose the target set. because stock can be divide according to many different reason, it only compose by
     the information provide by users. and it will provide some default groups in other method˚
 
+    :param level: index level
     :param target_info: a dict which list the type of stock id. like {"st":[stockid1,stockid2]}
     :param repository: repository
     :return:
@@ -169,7 +170,7 @@ def compose_target(target_info: dict, repository=_repository) -> pd.DataFrame:
     result = pd.DataFrame(index=repository.stock_info.index)
 
     for key, value in target_info.items():
-        result[key] = result.index.isin(value).astype(int)
+        result[key] = result.index.isin(value, level=level).astype(int)
 
     return result
 

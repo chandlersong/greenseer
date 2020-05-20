@@ -76,6 +76,21 @@ class TestLoadByStockId(TestCase):
         actual = compose_target({"x": ["b"], "y": pd.Series("a")}, repository)
         assert_frame_equal(expect, actual)
 
+    def test_compose_target_set_with_multi_index(self):
+        repository = create_mock_china_repository()
+
+        multi_index = pd.MultiIndex.from_frame(pd.DataFrame([["a", "foo"], ["a", "bar"], ["b", "foo"]]))
+        repository.stock_info = pd.DataFrame(np.random.random((3, 3)), index=multi_index)
+
+        print(repository.stock_info)
+        expect = pd.DataFrame({
+            "x": [0, 0, 1],
+            "y": [1, 1, 0]
+        }, index=multi_index)
+        actual = compose_target({"x": ["b"], "y": pd.Series("a")}, repository, level=0)
+        print(actual)
+        assert_frame_equal(expect, actual)
+
 
 if __name__ == '__main__':
     unittest.main()
