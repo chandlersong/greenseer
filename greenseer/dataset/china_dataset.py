@@ -78,7 +78,7 @@ _repository = ChinaReportRepository()
 
 _logger = logging.getLogger()
 
-_local_all_reports_repo: ReportLocalData = ReportLocalData(DEFAULT_LOCAL_PATH + "/chinaReports")
+_local_all_reports_repo = ReportLocalData(DEFAULT_LOCAL_PATH + "/chinaReports")
 
 _ALL_REPORTS_NAME = "all_finance_reports"
 

@@ -16,7 +16,6 @@
 import logging
 import re
 from functools import partial
-from re import Pattern
 from typing import List
 
 import pandas as pd
@@ -27,14 +26,14 @@ _logger = logging.getLogger()
 
 
 @FunctionTransformerWrapper()
-def regular_expression_index_filter(X: pd.DataFrame, pattern: Pattern, level=None) -> pd.DataFrame:
+def regular_expression_index_filter(X: pd.DataFrame, pattern, level=None) -> pd.DataFrame:
     drop_indexes = [index for index in X.index.get_level_values(level) if not re.match(pattern, index)]
     _logger.info("remove {} rows,details is {}".format(len(drop_indexes), drop_indexes))
     return X.drop(drop_indexes, level=level).sort_index(level=level, ascending=False)
 
 
 @FunctionTransformerWrapper()
-def regular_expression_column_filter(X: pd.DataFrame, patterns: List[Pattern], level=None) -> pd.DataFrame:
+def regular_expression_column_filter(X: pd.DataFrame, patterns, level=None) -> pd.DataFrame:
     columns = set(X.columns.get_level_values(level))
     for pattern in patterns:
         keep = [column for column in columns if re.match(pattern, column)]
@@ -51,7 +50,7 @@ def sum_column_transform(X: pd.DataFrame, new_name: str, columns: List[str], lev
 
 
 @FunctionTransformerWrapper()
-def re_sum_column_transform(X: pd.DataFrame, new_name: str, patterns: List[Pattern], level=None) -> pd.DataFrame:
+def re_sum_column_transform(X: pd.DataFrame, new_name: str, patterns, level=None) -> pd.DataFrame:
     columns = _match_columns_by_patterns(set(X.columns.get_level_values(level)), patterns)
     X[new_name] = X[columns].sum(level=level, axis=1)
     return X
