@@ -66,28 +66,23 @@ class TestLoadByStockId(TestCase):
         assert_frame_equal(expected, load_multi_data([stock_id_a, stock_id_b]))
 
     def test_compose_target_set(self):
-        repository = create_mock_china_repository()
-        repository.stock_info = pd.DataFrame(np.random.random((3, 3)), index=["a", "b", "c"])
+        index = ["a", "b", "c"]
 
         expect = pd.DataFrame({
             "x": [0, 1, 0],
             "y": [1, 0, 0]
-        }, index=["a", "b", "c"])
-        actual = compose_target({"x": ["b"], "y": pd.Series("a")}, repository)
+        }, index=index)
+        actual = compose_target({"x": ["b"], "y": pd.Series("a")}, pd.Index(index))
         assert_frame_equal(expect, actual)
 
     def test_compose_target_set_with_multi_index(self):
-        repository = create_mock_china_repository()
-
         multi_index = pd.MultiIndex.from_frame(pd.DataFrame([["a", "foo"], ["a", "bar"], ["b", "foo"]]))
-        repository.stock_info = pd.DataFrame(np.random.random((3, 3)), index=multi_index)
 
-        print(repository.stock_info)
         expect = pd.DataFrame({
             "x": [0, 0, 1],
             "y": [1, 1, 0]
         }, index=multi_index)
-        actual = compose_target({"x": ["b"], "y": pd.Series("a")}, repository, level=0)
+        actual = compose_target({"x": ["b"], "y": pd.Series("a")}, multi_index, level=0)
         print(actual)
         assert_frame_equal(expect, actual)
 

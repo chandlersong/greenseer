@@ -155,7 +155,7 @@ def __load_all_locally() -> pd.DataFrame:
     return _local_all_reports_repo.load_data(_ALL_REPORTS_NAME)
 
 
-def compose_target(target_info: dict, repository=_repository, level=None) -> pd.DataFrame:
+def compose_target(target_info: dict, index: pd.Index, level=None) -> pd.DataFrame:
     """
     FUTUREIMPROVE: add a filter here. only return the stock id in the filter
 
@@ -164,10 +164,10 @@ def compose_target(target_info: dict, repository=_repository, level=None) -> pd.
 
     :param level: index level
     :param target_info: a dict which list the type of stock id. like {"st":[stockid1,stockid2]}
-    :param repository: repository
+    :param index: target index
     :return:
     """
-    result = pd.DataFrame(index=repository.stock_info.index)
+    result = pd.DataFrame(index=index)
 
     for key, value in target_info.items():
         result[key] = result.index.isin(value, level=level).astype(int)
@@ -195,5 +195,5 @@ def load_by_stock_id(stock_id: str, force_remote=False, repository=_repository, 
 fetch_one_report = partial(load_by_stock_id, repository=_repository)
 fetch_multi_report = partial(load_multi_data, repository=_repository)
 fetch_train_set = partial(load_train_data, repository=_repository)
-fetch_default_targets = partial(compose_target, target_info=list_default_targets(), repository=_repository)
-fetch_targets = partial(compose_target, repository=_repository)
+fetch_default_targets = partial(compose_target, target_info=list_default_targets(), index=_repository.stock_info.index)
+fetch_targets = partial(compose_target, target_info=list_default_targets())
