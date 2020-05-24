@@ -34,6 +34,8 @@ CASH_REPORT = "cash"
 
 DEFAULT_LOCAL_PATH = "reportData"
 
+TRAIN_SET_ALL = None
+
 
 class ChinaReportRepository:
     _fields = ["_assert", "_income", "_cash", "_stock_info", "_local_path"]
@@ -83,13 +85,17 @@ _local_all_reports_repo = ReportLocalData(DEFAULT_LOCAL_PATH + "/chinaReports")
 _ALL_REPORTS_NAME = "all_finance_reports"
 
 
+def stock_info(repository=_repository) -> pd.DataFrame:
+    return repository.stock_info
+
+
 def set_local_path(local_path: str):
     _repository.refresh(local_path)
     global _local_all_reports_repo
     _local_all_reports_repo = ReportLocalData(local_path + "/chinaReports")
 
 
-def load_train_data(train_size=10, test_size=2, repository=_repository) -> (pd.DataFrame, pd.DataFrame):
+def load_train_data(train_size=10, repository=_repository) -> (pd.DataFrame, pd.DataFrame):
     """
     FUTUREIMPROVE: add target here
 
@@ -97,11 +103,12 @@ def load_train_data(train_size=10, test_size=2, repository=_repository) -> (pd.D
     :return: Train set, Test test
     """
     stock_ids = repository.stock_info.index.astype(str)
-    train_index, test_index = train_test_split(stock_ids, train_size=train_size, test_size=test_size)
 
-    train_data = fetch_multi_report(train_index)
-    test_data = fetch_multi_report(test_index)
-    return train_data, test_data
+    if train_size is not None:
+        train_index, _ = train_test_split(stock_ids, train_size=train_size, test_size=0)
+        return fetch_multi_report(train_index)
+    else:
+        return fetch_multi_report(stock_ids)
 
 
 def load_multi_data(stock_ids: np.array, force_remote=False, repository=_repository,
