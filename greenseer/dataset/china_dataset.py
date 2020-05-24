@@ -181,8 +181,7 @@ def list_default_targets() -> dict:
 
 
 def list_industry_category(repository: ChinaReportRepository = _repository, industry_column="industry") -> dict:
-    groups = repository.stock_info.groupby(industry_column).groups
-    return {key: list(value) for key, value in groups.items()}
+    return {key: list(value) for key, value in repository.stock_info.groupby(industry_column).groups.items()}
 
 
 def load_by_stock_id(stock_id: str, force_remote=False, repository=_repository, max_sleep_seconds=9) -> pd.DataFrame:
