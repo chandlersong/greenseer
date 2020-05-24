@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from greenseer.dataset.china_dataset import load_by_stock_id, load_multi_data, compose_target
+from greenseer.dataset.china_dataset import load_by_stock_id, load_multi_data, compose_target, list_industry_category
 
 
 def create_mock_china_repository():
@@ -86,6 +86,16 @@ class TestLoadByStockId(TestCase):
         print(actual)
         assert_frame_equal(expect, actual)
 
+    def test_list_stock_industry(self):
+        repository = create_mock_china_repository()
+        repository.stock_info = pd.DataFrame({
+            "industry": ["a", "b", "b", "a", "a"]
+        }, index=["A", "B", "C", "D", "E"])
 
-if __name__ == '__main__':
-    unittest.main()
+        expected = {"a": ["A", "D", "E"], "b": ["B", "C"]}
+
+        actual = list_industry_category(repository)
+        self.assertDictEqual(expected, actual)
+
+        if __name__ == '__main__':
+            unittest.main()

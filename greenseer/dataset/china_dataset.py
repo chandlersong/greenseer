@@ -157,8 +157,6 @@ def __load_all_locally() -> pd.DataFrame:
 
 def compose_target(target_info: dict, index: pd.Index, level=None) -> pd.DataFrame:
     """
-    FUTUREIMPROVE: add a filter here. only return the stock id in the filter
-
     compose the target set. because stock can be divide according to many different reason, it only compose by
     the information provide by users. and it will provide some default groups in other method˚
 
@@ -180,6 +178,11 @@ def list_default_targets() -> dict:
     st_stocks = ts.get_st_classified()
     result["st"] = st_stocks["code"].values
     return result
+
+
+def list_industry_category(repository: ChinaReportRepository = _repository, industry_column="industry") -> dict:
+    groups = repository.stock_info.groupby(industry_column).groups
+    return {key: list(value) for key, value in groups.items()}
 
 
 def load_by_stock_id(stock_id: str, force_remote=False, repository=_repository, max_sleep_seconds=9) -> pd.DataFrame:
