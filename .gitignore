@@ -16,5 +16,6 @@ reportData/
 /demo/allReportsData/
 /demo/reportData/
 /draft/
-/demo/reportData/
 .theia
+/jupyter/images/
+/jupyter/csv/

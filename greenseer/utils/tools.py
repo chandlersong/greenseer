@@ -13,16 +13,27 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 PROJECT_ROOT_DIR = "."
 IMAGES_PATH = os.path.join(PROJECT_ROOT_DIR, "images")
+CSV_PATH = os.path.join(PROJECT_ROOT_DIR, "csv")
 
 
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
+def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=800):
+    Path(IMAGES_PATH).mkdir(parents=True, exist_ok=True)
     path = os.path.join(IMAGES_PATH, fig_id + "." + fig_extension)
     print("Saving figure", fig_id)
     if tight_layout:
         plt.tight_layout()
     plt.savefig(path, format=fig_extension, dpi=resolution)
+
+
+def save_csv(data: pd.DataFrame, name: str):
+    Path(CSV_PATH).mkdir(parents=True, exist_ok=True)
+    path = os.path.join(CSV_PATH, name + "." + "csv")
+    print("Saving scv:", path)
+    data.to_csv(path, encoding='utf-8-sig')
