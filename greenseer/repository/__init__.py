@@ -114,9 +114,10 @@ class ReportLocalData(LocalSource):
 
         df.sort_index().to_csv(file_path, encoding="utf-8", compression="gzip")
 
-    def load_data(self, identify, *args, **kwargs) -> DataFrame:
+    def load_data(self, identify, index_col=0, dtype=None, *args, **kwargs) -> DataFrame:
         try:
-            return pd.read_csv(self.file_format.format(identify), index_col=0, compression="gzip", parse_dates=True)
+            return pd.read_csv(self.file_format.format(identify), index_col=index_col, compression="gzip",
+                               parse_dates=True, dtype=dtype)
         except FileNotFoundError:
             self.logger.error("{} not exists in local".format(identify))
             return pd.DataFrame()

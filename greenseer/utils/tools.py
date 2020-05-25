@@ -1,4 +1,4 @@
-#  Copyright (c) 2020 RumorMill (https://chandlersong.me)
+#  Copyright (c) 2020 GreenSeer (https://chandlersong.me)
 #  Copyright (c) 2020 chandler.song
 #
 #  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
@@ -12,22 +12,17 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-#
-import unittest
-from logging.config import fileConfig
-from unittest import TestCase
+import os
 
-from greenseer.dataset.china_dataset import set_local_path, fetch_all
+import matplotlib.pyplot as plt
 
-
-class TestDataSet(TestCase):
-
-    def test_load_all_stock(self):
-        fileConfig('logging_config.ini')
-        set_local_path("allReportsData")
-        d = fetch_all()
-        print(d)
+PROJECT_ROOT_DIR = "."
+IMAGES_PATH = os.path.join(PROJECT_ROOT_DIR, "images")
 
 
-if __name__ == '__main__':
-    unittest.main()
+def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
+    path = os.path.join(IMAGES_PATH, fig_id + "." + fig_extension)
+    print("Saving figure", fig_id)
+    if tight_layout:
+        plt.tight_layout()
+    plt.savefig(path, format=fig_extension, dpi=resolution)

@@ -36,6 +36,10 @@ DEFAULT_LOCAL_PATH = "reportData"
 
 TRAIN_SET_ALL = None
 
+CODE_INDEX_NAME = "code"
+
+RELEASE_AT_INDEX_NAME = "releaseAt"
+
 
 class ChinaReportRepository:
     _fields = ["_assert", "_income", "_cash", "_stock_info", "_local_path"]
@@ -95,7 +99,8 @@ def set_local_path(local_path: str):
     _local_all_reports_repo = ReportLocalData(local_path + "/chinaReports")
 
 
-def load_train_data(train_size=10, repository=_repository) -> (pd.DataFrame, pd.DataFrame):
+def load_train_data(train_size=10, reload=False, force_remote=False, repository=_repository) -> (
+        pd.DataFrame, pd.DataFrame):
     """
     FUTUREIMPROVE: add target here
 
@@ -108,7 +113,7 @@ def load_train_data(train_size=10, repository=_repository) -> (pd.DataFrame, pd.
         train_index, _ = train_test_split(stock_ids, train_size=train_size, test_size=0)
         return fetch_multi_report(train_index)
     else:
-        return fetch_multi_report(stock_ids)
+        return fetch_all(reload=reload, force_remote=force_remote)
 
 
 def load_multi_data(stock_ids: np.array, force_remote=False, repository=_repository,
@@ -144,7 +149,10 @@ def fetch_all(reload=False, force_remote=False, repository=_repository, max_slee
         result = __load_all_locally()
         if result.empty:
             result = __reload_all_locally(force_remote, repository, max_sleep_seconds)
-            _local_all_reports_repo.refresh_data(result, _ALL_REPORTS_NAME)
+            result = result.rename_axis([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
+            data = result.reset_index()
+            data = data.astype({"code": str})
+            _local_all_reports_repo.refresh_data(data, _ALL_REPORTS_NAME)
         return result
     else:
         result = __reload_all_locally(force_remote, repository, max_sleep_seconds)
@@ -159,7 +167,10 @@ def __reload_all_locally(force_remote, repository, max_sleep_seconds) -> pd.Data
 
 
 def __load_all_locally() -> pd.DataFrame:
-    return _local_all_reports_repo.load_data(_ALL_REPORTS_NAME)
+    data = _local_all_reports_repo.load_data(_ALL_REPORTS_NAME, dtype={"code": str})
+    if not data.empty:
+        data = data.set_index([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
+    return data
 
 
 def compose_target(target_info: dict, index: pd.Index, level=None) -> pd.DataFrame:

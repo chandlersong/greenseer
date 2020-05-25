@@ -18,9 +18,10 @@ import re
 from functools import partial
 from typing import List
 
+import numpy as np
 import pandas as pd
 
-from greenseer.dataset.china_dataset import stock_info
+from greenseer.dataset.china_dataset import stock_info, CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME
 from greenseer.utils.annotation import FunctionTransformerWrapper
 
 _logger = logging.getLogger()
@@ -29,11 +30,17 @@ _logger = logging.getLogger()
 @FunctionTransformerWrapper()
 def append_industry_transform(X: pd.DataFrame = None) -> pd.DataFrame:
     industry_category = stock_info()[["industry"]]
-    data_with_industry = pd.merge(X.reset_index(), industry_category.reset_index(), left_on='level_0', right_on='code',
+    data_with_industry = pd.merge(X.reset_index(), industry_category.reset_index(), on=CODE_INDEX_NAME,
                                   how='left')
-    data = data_with_industry.set_index(['code', 'level_1']).drop("level_0", axis=1)
+    data = data_with_industry.set_index([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
     data.index.set_names(["code", 'release_at'], inplace=True)
     return data
+
+
+@FunctionTransformerWrapper()
+def remove_inf_and_na(X: pd.DataFrame = None) -> pd.DataFrame:
+    X.replace([np.inf, -np.inf], np.nan)
+    return X.dropna()
 
 
 @FunctionTransformerWrapper()

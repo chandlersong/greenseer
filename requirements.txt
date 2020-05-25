@@ -1,5 +1,6 @@
 numpy~=1.18.1
 pandas~=1.0.3
-tushare~=1.2.54
+tushare~=1.2.50
 setuptools~=45.2.0
 scikit-learn~=0.22.1
+matplotlib~=3.1.3
