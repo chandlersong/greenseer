@@ -15,9 +15,11 @@
 
 import unittest
 
+import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
+from greenseer.preprocessing.clean_data import RemoveAbnormalFilter
 from greenseer.preprocessing.transformers import regular_expression_index_filter, pick_annual_report_china, \
     regular_expression_column_filter, sum_column_transform, percent_column_transform, re_sum_column_transform, \
     re_percent_column_transform
@@ -116,6 +118,33 @@ class PercentColumnTransformerTest(unittest.TestCase):
         print(actual)
         assert_frame_equal(expected, actual)
         self.assertTrue(True)
+
+
+class CleanDataTest(unittest.TestCase):
+    def test_remove_abnormal_filter_both(self):
+        origin = np.random.random([100, 3])
+        values = np.vstack([origin, [0.5, 100, 0.5], [0.5, 0.5, -1]])
+        test_filter = RemoveAbnormalFilter(["y", "z"])
+        self.remove_abnormal_and_check(test_filter, values, shape=(98, 3))
+
+    def test_remove_abnormal_filter_high(self):
+        origin = np.random.random([100, 3])
+        values = np.vstack([origin, [0.5, 100, 0.5], [0.5, 0.5, 100]])
+        test_filter = RemoveAbnormalFilter(["y", "z"], mode='high')
+
+        self.remove_abnormal_and_check(test_filter, values)
+
+    def test_remove_abnormal_filter_low(self):
+        origin = np.random.random([100, 3])
+        values = np.vstack([origin, [0.5, -1, 0.5], [0.5, -2, 0.5]])
+        test_filter = RemoveAbnormalFilter(["y", "z"], mode='low')
+
+        self.remove_abnormal_and_check(test_filter, values)
+
+    def remove_abnormal_and_check(self, test_filter, values, shape=(100, 3)):
+        data = pd.DataFrame({"x": values[:, 0], "y": values[:, 1], "z": values[:, 2]}, index=list(np.arange(0, 102)))
+        actual = test_filter.fit_transform(data)
+        self.assertEqual(shape, actual.shape)
 
 
 if __name__ == '__main__':

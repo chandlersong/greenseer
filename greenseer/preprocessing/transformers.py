@@ -18,7 +18,6 @@ import re
 from functools import partial
 from typing import List
 
-import numpy as np
 import pandas as pd
 
 from greenseer.dataset.china_dataset import stock_info, CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME
@@ -35,12 +34,6 @@ def append_industry_transform(X: pd.DataFrame = None) -> pd.DataFrame:
     data = data_with_industry.set_index([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
     data.index.set_names(["code", 'release_at'], inplace=True)
     return data
-
-
-@FunctionTransformerWrapper()
-def remove_inf_and_na(X: pd.DataFrame = None) -> pd.DataFrame:
-    X.replace([np.inf, -np.inf], np.nan)
-    return X.dropna()
 
 
 @FunctionTransformerWrapper()
