@@ -29,7 +29,7 @@ def remove_inf_and_na(X: pd.DataFrame = None) -> pd.DataFrame:
 
 class RemoveAbnormalFilter(BaseEstimator, TransformerMixin):
 
-    def __init__(self, column: List[str], quantile=0.999, mode="both"):
+    def __init__(self, column: List[str], quantile=0.999, mode="high"):
         """
 
         :param column: column name

@@ -21,7 +21,8 @@ intall_requires = [
     'pandas-datareader>=0.2.1',
     'pandas>=0.18.1',
     'ta-lib>=0.4.0',
-    'numpy>=1.11.0'
+    'numpy>=1.11.0',
+    'seaborn>=0.10.1'
 ]
 
 
