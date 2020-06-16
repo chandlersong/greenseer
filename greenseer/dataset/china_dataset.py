@@ -167,7 +167,7 @@ def __reload_all_locally(force_remote, repository, max_sleep_seconds) -> pd.Data
 
 
 def __load_all_locally() -> pd.DataFrame:
-    data = _local_all_reports_repo.load_data(_ALL_REPORTS_NAME, dtype={"code": str})
+    data = _local_all_reports_repo.load_data(_ALL_REPORTS_NAME, dtype={"code": str}, parse_dates=[2])
     if not data.empty:
         data = data.set_index([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
     return data

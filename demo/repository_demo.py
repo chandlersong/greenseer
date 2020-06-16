@@ -48,6 +48,7 @@ class TestChinaStock(TestCase):
         print("income report")
         income_report = create_china_stock_income_repository(base_folder="reportData").load_data("600096")
         save_to_file("income_report.txt", income_report.columns)
+        print(income_report.index.get_level_values(0))
         print("finish")
 
 

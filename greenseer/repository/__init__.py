@@ -114,10 +114,10 @@ class ReportLocalData(LocalSource):
 
         df.sort_index().to_csv(file_path, encoding="utf-8", compression="gzip")
 
-    def load_data(self, identify, index_col=0, dtype=None, *args, **kwargs) -> DataFrame:
+    def load_data(self, identify, index_col=0, dtype=None, parse_dates=True, *args, **kwargs) -> DataFrame:
         try:
             return pd.read_csv(self.file_format.format(identify), index_col=index_col, compression="gzip",
-                               parse_dates=True, dtype=dtype)
+                               parse_dates=parse_dates, dtype=dtype)
         except FileNotFoundError:
             self.logger.error("{} not exists in local".format(identify))
             return pd.DataFrame()
@@ -162,6 +162,11 @@ class ReportRepository(RemoteFetcher, ABC):
 
             remote_data = self.initial_remote_data(stock_id)
             self.local_source.refresh_data(remote_data, stock_id)
-            return remote_data
+            return _change_column_to_datetime(remote_data)
         else:
-            return self.__local_source.load_data(stock_id)
+            return _change_column_to_datetime(self.__local_source.load_data(stock_id))
+
+
+def _change_column_to_datetime(data: pd.DataFrame):
+    data.columns = data.columns.map(pd.Timestamp)
+    return data
