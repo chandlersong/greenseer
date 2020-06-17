@@ -18,14 +18,25 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-PROJECT_ROOT_DIR = "."
-IMAGES_PATH = os.path.join(PROJECT_ROOT_DIR, "images")
-CSV_PATH = os.path.join(PROJECT_ROOT_DIR, "csv")
+_root_dir = "."
+_image_root = os.path.join(_root_dir, "images")
+_csv_root = os.path.join(_root_dir, "csv")
+
+
+def refresh_report_data(root: str):
+    global _root_dir
+    global _image_root
+    global _csv_root
+    _root_dir = "./analysisData/" + root
+    _image_root = os.path.join(_root_dir, "images")
+    _csv_root = os.path.join(_root_dir, "csv")
+    Path(_image_root).mkdir(parents=True, exist_ok=True)
+    Path(_csv_root).mkdir(parents=True, exist_ok=True)
 
 
 def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=800):
-    Path(IMAGES_PATH).mkdir(parents=True, exist_ok=True)
-    path = os.path.join(IMAGES_PATH, fig_id + "." + fig_extension)
+    Path(_image_root).mkdir(parents=True, exist_ok=True)
+    path = os.path.join(_image_root, fig_id + "." + fig_extension)
     print("Saving figure", fig_id)
     if tight_layout:
         plt.tight_layout()
@@ -33,7 +44,7 @@ def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=800):
 
 
 def save_csv(data: pd.DataFrame, name: str):
-    Path(CSV_PATH).mkdir(parents=True, exist_ok=True)
-    path = os.path.join(CSV_PATH, name + "." + "csv")
+    Path(_csv_root).mkdir(parents=True, exist_ok=True)
+    path = os.path.join(_csv_root, name + "." + "csv")
     print("Saving scv:", path)
     data.to_csv(path, encoding='utf-8-sig')

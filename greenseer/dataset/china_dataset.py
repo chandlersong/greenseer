@@ -111,7 +111,9 @@ def load_train_data(train_size=10, reload=False, force_remote=False, repository=
 
     if train_size is not None:
         train_index, _ = train_test_split(stock_ids, train_size=train_size, test_size=0)
-        return fetch_multi_report(train_index)
+        result = fetch_multi_report(train_index)
+        result = result.rename_axis([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
+        return result
     else:
         return fetch_all(reload=reload, force_remote=force_remote)
 
