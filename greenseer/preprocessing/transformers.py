@@ -105,4 +105,9 @@ def percent_column_transform(X: pd.DataFrame, new_name: str, numerator: List[str
     return X
 
 
-pick_annual_report_china = partial(regular_expression_index_filter, pattern=r'\d{4}-12-31', level=1)
+@FunctionTransformerWrapper()
+def pick_row_by_index_month(X: pd.DataFrame, month: int, level=None) -> pd.DataFrame:
+    return X.loc[X.index.get_level_values(level).month == month, :]
+
+
+pick_annual_report_china = partial(pick_row_by_index_month, month=12, level=1)

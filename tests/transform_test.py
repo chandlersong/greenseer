@@ -22,7 +22,45 @@ from pandas.testing import assert_frame_equal
 from greenseer.preprocessing.clean_data import RemoveAbnormalFilter
 from greenseer.preprocessing.transformers import regular_expression_index_filter, pick_annual_report_china, \
     regular_expression_column_filter, sum_column_transform, percent_column_transform, re_sum_column_transform, \
-    re_percent_column_transform
+    re_percent_column_transform, pick_row_by_index_month
+
+
+class TimeSeriesFilterTest(unittest.TestCase):
+
+    def test_pick_row_by_index_month(self):
+        data = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [6, 7, 8, 9, 0]},
+                            index=[pd.Timestamp("2020-12-31"), pd.Timestamp("2020-09-30"),
+                                   pd.Timestamp("2019-12-31"),
+                                   pd.Timestamp("2020-12-31"),
+                                   pd.Timestamp("2020-09-30")])
+
+        transformer = pick_row_by_index_month(month=9)
+
+        expected = pd.DataFrame({"x": [2, 5], "y": [7, 0]},
+                                index=[pd.Timestamp("2020-09-30"), pd.Timestamp("2020-09-30")])
+        actual = transformer.transform(data)
+        print(actual)
+        assert_frame_equal(expected, actual)
+        self.assertEqual(True, True)
+
+    def test_pick_annual_report_china(self):
+        data = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [6, 7, 8, 9, 0]},
+                            index=(pd.MultiIndex.from_tuples(
+                                [("a", pd.Timestamp("2020-12-31")), ("a", pd.Timestamp("2020-09-30")),
+                                 ("a", pd.Timestamp("2019-12-31")),
+                                 ("b", pd.Timestamp("2020-12-31")),
+                                 ("b", pd.Timestamp("2020-09-30"))])))
+
+        transformer = pick_annual_report_china()
+
+        expected = pd.DataFrame({"x": [1, 3, 4], "y": [6, 8, 9]},
+                                index=(pd.MultiIndex.from_tuples(
+                                    [("a", pd.Timestamp("2020-12-31")), ("a", pd.Timestamp("2019-12-31")),
+                                     ("b", pd.Timestamp("2020-12-31"))])))
+        actual = transformer.transform(data)
+        print(actual)
+        assert_frame_equal(expected, actual)
+        self.assertEqual(True, True)
 
 
 class RegularExpressionIndexFilterTest(unittest.TestCase):
@@ -34,22 +72,6 @@ class RegularExpressionIndexFilterTest(unittest.TestCase):
         expected = pd.DataFrame({"x": [3, 1], "y": [6, 4]}, index=["a-cc", "a-bb"])
 
         assert_frame_equal(expected, transformer.transform(data))
-        self.assertEqual(True, True)
-
-    def test_pick_annual_report_china(self):
-        data = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [6, 7, 8, 9, 0]},
-                            index=(pd.MultiIndex.from_tuples(
-                                [("a", "2020-12-31"), ("a", "2020-09-31"), ("a", "2019-12-31"), ("b", "2020-12-31"),
-                                 ("b", "2020-09-31")])))
-
-        transformer = pick_annual_report_china()
-
-        expected = pd.DataFrame({"x": [4, 1, 3], "y": [9, 6, 8]},
-                                index=(pd.MultiIndex.from_tuples(
-                                    [("b", "2020-12-31"), ("a", "2020-12-31"), ("a", "2019-12-31")])))
-        actual = transformer.transform(data)
-        print(actual)
-        assert_frame_equal(expected, actual)
         self.assertEqual(True, True)
 
 
