@@ -1,5 +1,5 @@
-#  Copyright (c) 2020 GreenSeer (https://chandlersong.me)
-#  Copyright (c) 2020 chandler.song
+# Copyright (c) 2020 GreenSeer (https://chandlersong.me)
+# Copyright (c) 2020 chandler.song
 #
 #  Licensed under the GNU GENERAL PUBLIC LICENSE v3.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ import numpy as np
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
+from greenseer.dataset.china_dataset import CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME
 from greenseer.preprocessing.clean_data import RemoveAbnormalFilter
 from greenseer.preprocessing.transformers import regular_expression_index_filter, pick_annual_report_china, \
     regular_expression_column_filter, sum_column_transform, percent_column_transform, re_sum_column_transform, \
-    re_percent_column_transform, pick_row_by_index_month
+    re_percent_column_transform, pick_row_by_index_month, unstack_release_at
 
 
 class TimeSeriesFilterTest(unittest.TestCase):
@@ -142,18 +143,35 @@ class PercentColumnTransformerTest(unittest.TestCase):
         self.assertTrue(True)
 
 
+class UnstackReleaseAtTest(unittest.TestCase):
+    def test_unstack_drop_if_missing(self):
+        index = pd.MultiIndex.from_product(
+            [["a", "b"], pd.date_range("20200622", periods=5, freq="Q")],
+            names=[CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
+        index = index.append(pd.MultiIndex.from_product([["c"], pd.date_range("20191201", periods=5, freq="Q")]))
+        data = pd.DataFrame({"x": np.arange(0, 15), "y": np.random.random(15)}, index=index)
+        expected = pd.DataFrame(
+            [np.arange(0, 5), np.arange(5, 10)],
+            columns=pd.date_range("20200622", periods=5, freq="Q"),
+            index=["a", "b"]
+        )
+        expected.columns.names = [RELEASE_AT_INDEX_NAME]
+        transform = unstack_release_at(start="2020-06-30", end="2021-06-30", column_name="x")
+        actual = transform.transform(data)
+        assert_frame_equal(expected, actual, check_dtype=False)
+
+
 class CleanDataTest(unittest.TestCase):
     def test_remove_abnormal_filter_both(self):
         origin = np.random.random([100, 3])
         values = np.vstack([origin, [0.5, 100, 0.5], [0.5, 0.5, -1]])
         test_filter = RemoveAbnormalFilter(["y", "z"])
-        self.remove_abnormal_and_check(test_filter, values, shape=(98, 3))
+        self.remove_abnormal_and_check(test_filter, values, shape=(100, 3))
 
     def test_remove_abnormal_filter_high(self):
         origin = np.random.random([100, 3])
         values = np.vstack([origin, [0.5, 100, 0.5], [0.5, 0.5, 100]])
         test_filter = RemoveAbnormalFilter(["y", "z"], mode='high')
-
         self.remove_abnormal_and_check(test_filter, values)
 
     def test_remove_abnormal_filter_low(self):

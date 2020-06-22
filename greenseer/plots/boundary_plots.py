@@ -17,6 +17,7 @@ import numpy as np
 from matplotlib.colors import Normalize
 
 
+
 def plot_centroids(plt, centroids, weights=None, circle_color='w', cross_color='k'):
     if weights is not None:
         centroids = centroids[weights > weights.max() / 10]
@@ -48,7 +49,7 @@ def plot_decision_boundaries(plt, clusterer, size: tuple, resolution=1000, show_
     plt.ylabel(labels[1], fontsize=15, rotation=0)
 
 
-def plot_gaussian_mixture_boundaries(plt, clusterer, size: tuple, resolution=1000, show_ylabels=True, cm=None):
+def plot_gaussian_mixture_boundaries(plt, clusterer, size: tuple, resolution=1000, cm=None):
     mins = size[0] - 0.1
     maxs = size[1] + 0.1
     xx, yy = np.meshgrid(np.linspace(mins[0], maxs[0], resolution),
@@ -58,22 +59,8 @@ def plot_gaussian_mixture_boundaries(plt, clusterer, size: tuple, resolution=100
 
     plt.contourf(xx, yy, Z,
                  norm=Normalize(vmin=Z.min(), vmax=Z.max()),
-                 cm=cm,
-                 levels=np.logspace(0, 2, 12))
+                 cmap=cm)
     plt.contour(xx, yy, Z,
                 norm=Normalize(vmin=Z.min(), vmax=Z.max()),
-                cm=cm,
-                levels=np.logspace(0, 2, 12),
                 linewidths=1, colors='k')
-
-    Z = clusterer.predict(np.c_[xx.ravel(), yy.ravel()])
-    Z = Z.reshape(xx.shape)
-    plt.contour(xx, yy, Z,
-                linewidths=2, colors='r', linestyles='dashed')
     plot_centroids(plt, clusterer.means_, clusterer.weights_)
-
-    plt.xlabel("$x_1$", fontsize=14)
-    if show_ylabels:
-        plt.ylabel("$x_2$", fontsize=14, rotation=0)
-    else:
-        plt.tick_params(labelleft=False)

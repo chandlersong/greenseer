@@ -32,7 +32,7 @@ def append_industry_transform(X: pd.DataFrame = None) -> pd.DataFrame:
     data_with_industry = pd.merge(X.reset_index(), industry_category.reset_index(), on=CODE_INDEX_NAME,
                                   how='left')
     data = data_with_industry.set_index([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
-    data.index.set_names(["code", 'release_at'], inplace=True)
+    data.index.set_names([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME], inplace=True)
     return data
 
 
@@ -108,6 +108,45 @@ def percent_column_transform(X: pd.DataFrame, new_name: str, numerator: List[str
 @FunctionTransformerWrapper()
 def pick_row_by_index_month(X: pd.DataFrame, month: int, level=None) -> pd.DataFrame:
     return X.loc[X.index.get_level_values(level).month == month, :]
+
+
+@FunctionTransformerWrapper()
+def unstack_release_at(X: pd.DataFrame, start: str, end: str, column_name: str,
+                       drop_if_contain_na: bool = True) -> pd.DataFrame:
+    """
+    unstack index release at
+    :param X: input data
+    :param start: start time
+    :param end: end time
+    :param column_name: the value of new data frame
+    :param drop_if_contain_na: drop is contine na
+    :return:
+    """
+    stock_ids = X.index.levels[0]
+    pending_array = []
+    idx = pd.IndexSlice
+    X = X.loc[idx[:, start:end], :]
+    for stock_id in stock_ids:
+        try:
+            one_stock = X.loc[stock_id]
+        except KeyError as err:
+            _logger.warning("{} can't get the data".format(err))
+            continue
+        one_stock = one_stock[column_name].to_frame().T
+        one_stock.index = [stock_id]
+        one_stock.fillna(0)
+        pending_array.append(one_stock)
+
+    _logger.debug("unstack_release_at: {} total find stocks".format(len(pending_array)))
+    if len(pending_array) == 0:
+        return pd.DataFrame()
+    result = pd.concat(pending_array)
+
+    if drop_if_contain_na:
+        result = result.dropna()
+        _logger.debug("unstack_release_at:after drop na still contain {} stock ".format(len(result)))
+
+    return result
 
 
 pick_annual_report_china = partial(pick_row_by_index_month, month=12, level=1)

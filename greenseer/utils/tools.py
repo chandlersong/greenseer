@@ -17,6 +17,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.pylab import mpl
 
 _root_dir = "."
 _image_root = os.path.join(_root_dir, "images")
@@ -32,6 +33,12 @@ def refresh_report_data(root: str):
     _csv_root = os.path.join(_root_dir, "csv")
     Path(_image_root).mkdir(parents=True, exist_ok=True)
     Path(_csv_root).mkdir(parents=True, exist_ok=True)
+
+
+def enable_matplotlib_chinese():
+    plt.rcParams['font.family'] = 'Source Han Serif SC'
+    mpl.rcParams['font.sans-serif'] = ['Source Han Serif SC']  # 指定默认字体
+    mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 
 
 def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=800):

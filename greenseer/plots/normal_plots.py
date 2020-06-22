@@ -27,6 +27,4 @@ class DistributeGramEntry:
 def plot_distribute_gram(plt, data: List[DistributeGramEntry], labels: List[str]):
     for entry in data:
         plt.plot(entry.x, entry.y, entry.fmt, label=entry.label)
-    plt.xlabel(labels[0], fontsize=15)
-    plt.ylabel(labels[1], fontsize=15)
     plt.legend(loc="upper left")
