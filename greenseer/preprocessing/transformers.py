@@ -18,7 +18,9 @@ import re
 from functools import partial
 from typing import List
 
+import numpy as np
 import pandas as pd
+from sklearn.base import TransformerMixin, BaseEstimator
 
 from greenseer.dataset.china_dataset import stock_info, CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME
 from greenseer.utils.annotation import FunctionTransformerWrapper
@@ -27,12 +29,37 @@ _logger = logging.getLogger()
 
 
 @FunctionTransformerWrapper()
-def append_industry_transform(X: pd.DataFrame = None) -> pd.DataFrame:
+def to_numpy_type(X: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
+    return X[columns].values
+
+
+@FunctionTransformerWrapper()
+def join_data_frame(X: pd.DataFrame, join: pd.DataFrame, on: str, new_index: List[str], how="left") -> pd.DataFrame:
+    result = pd.merge(X.reset_index(), join, on=on, how=how)
+    return result.set_index(new_index)
+
+
+@FunctionTransformerWrapper()
+def append_industry_transform(X: pd.DataFrame = None,
+                              index_names=None) -> pd.DataFrame:
+    if index_names is None:
+        index_names = [CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME]
     industry_category = stock_info()[["industry"]]
     data_with_industry = pd.merge(X.reset_index(), industry_category.reset_index(), on=CODE_INDEX_NAME,
                                   how='left')
-    data = data_with_industry.set_index([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME])
-    data.index.set_names([CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME], inplace=True)
+    data = data_with_industry.set_index(index_names)
+    return data
+
+
+@FunctionTransformerWrapper()
+def append_stock_info_transform(X: pd.DataFrame = None, info: str = "name",
+                                index_names=None) -> pd.DataFrame:
+    if index_names is None:
+        index_names = [CODE_INDEX_NAME, RELEASE_AT_INDEX_NAME]
+    industry_category = stock_info()[[info]]
+    data_with_industry = pd.merge(X.reset_index(), industry_category.reset_index(), on=CODE_INDEX_NAME,
+                                  how='left')
+    data = data_with_industry.set_index(index_names)
     return data
 
 
@@ -130,7 +157,7 @@ def unstack_release_at(X: pd.DataFrame, start: str, end: str, column_name: str,
         try:
             one_stock = X.loc[stock_id]
         except KeyError as err:
-            _logger.warning("{} can't get the data".format(err))
+            _logger.debug("{} can't get the data".format(err))
             continue
         one_stock = one_stock[column_name].to_frame().T
         one_stock.index = [stock_id]
@@ -145,8 +172,34 @@ def unstack_release_at(X: pd.DataFrame, start: str, end: str, column_name: str,
     if drop_if_contain_na:
         result = result.dropna()
         _logger.debug("unstack_release_at:after drop na still contain {} stock ".format(len(result)))
-
+    result.index.set_names([CODE_INDEX_NAME], inplace=True)
     return result
+
+
+class MeanDistanceTransformer(BaseEstimator, TransformerMixin):
+    """
+    1: calculate the center (means of each column) by group_by column
+    2: create a new column which is distance to the center or each row
+    """
+
+    def __init__(self, group_by: str, columns: List[str], new_column: str = "distance"):
+        self._group_by = group_by
+        self._columns = columns
+        self._new_column = new_column
+        self._centers = None
+
+    def fit(self, X: pd.DataFrame, y=None):
+        self._centers = X.groupby(self._group_by).mean()
+        return self
+
+    def transform(self, X: pd.DataFrame):
+        X[self._new_column] = X.apply(self._calculate_distance, axis=1)
+        return X
+
+    def _calculate_distance(self, row: pd.Series):
+        center_ids = self._centers.loc[row[self._group_by]][self._columns].values
+        val = row[self._columns].values
+        return np.linalg.norm(center_ids - val)
 
 
 pick_annual_report_china = partial(pick_row_by_index_month, month=12, level=1)

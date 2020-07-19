@@ -23,7 +23,7 @@ from greenseer.dataset.china_dataset import CODE_INDEX_NAME, RELEASE_AT_INDEX_NA
 from greenseer.preprocessing.clean_data import RemoveAbnormalFilter
 from greenseer.preprocessing.transformers import regular_expression_index_filter, pick_annual_report_china, \
     regular_expression_column_filter, sum_column_transform, percent_column_transform, re_sum_column_transform, \
-    re_percent_column_transform, pick_row_by_index_month, unstack_release_at
+    re_percent_column_transform, pick_row_by_index_month, unstack_release_at, MeanDistanceTransformer
 
 
 class TimeSeriesFilterTest(unittest.TestCase):
@@ -63,6 +63,18 @@ class TimeSeriesFilterTest(unittest.TestCase):
         assert_frame_equal(expected, actual)
         self.assertEqual(True, True)
 
+    def test_hello_world(self):
+        from sklearn.datasets import fetch_openml
+        mnist = fetch_openml('mnist_784', version=1, cache=True)
+
+        X = mnist["data"]
+        y = mnist["target"].astype(np.uint8)
+
+        X_train = X[:60000]
+        y_train = y[:60000]
+        X_test = X[60000:]
+        y_test = y[60000:]
+        print(y_train)
 
 class RegularExpressionIndexFilterTest(unittest.TestCase):
     def test_basic_case(self):
@@ -185,6 +197,28 @@ class CleanDataTest(unittest.TestCase):
         data = pd.DataFrame({"x": values[:, 0], "y": values[:, 1], "z": values[:, 2]}, index=list(np.arange(0, 102)))
         actual = test_filter.fit_transform(data)
         self.assertEqual(shape, actual.shape)
+
+
+class MeanDistanceTransformerTest(unittest.TestCase):
+
+    def test_fit_transform(self):
+        data = pd.DataFrame({"x": [1, 2, 3], "y": [5, 5, 6], "z": ["a", "a", "b"]}, index=["a", "b", "c"])
+        mean = data.groupby("z").mean()
+        expected = data.copy()
+        expected["distance"] = expected.apply(calculate_distance(mean), axis=1)
+
+        transformer = MeanDistanceTransformer(group_by="z", columns=["x", "y"])
+        actual = transformer.fit_transform(data)
+        assert_frame_equal(expected, actual, check_dtype=False)
+
+
+def calculate_distance(mean: pd.DataFrame):
+    def calculate(row: pd.Series):
+        center_ids = mean.loc[row["z"]][["x", "y"]].values
+        val = row[["x", "y"]].values
+        return np.linalg.norm(center_ids - val)
+
+    return calculate
 
 
 if __name__ == '__main__':

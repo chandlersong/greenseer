@@ -15,24 +15,13 @@
 import os
 from pathlib import Path
 
+import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.pylab import mpl
+from sklearn.base import BaseEstimator
 
 _root_dir = "."
-_image_root = os.path.join(_root_dir, "images")
-_csv_root = os.path.join(_root_dir, "csv")
-
-
-def refresh_report_data(root: str):
-    global _root_dir
-    global _image_root
-    global _csv_root
-    _root_dir = "./analysisData/" + root
-    _image_root = os.path.join(_root_dir, "images")
-    _csv_root = os.path.join(_root_dir, "csv")
-    Path(_image_root).mkdir(parents=True, exist_ok=True)
-    Path(_csv_root).mkdir(parents=True, exist_ok=True)
 
 
 def enable_matplotlib_chinese():
@@ -41,17 +30,48 @@ def enable_matplotlib_chinese():
     mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 
 
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=800):
-    Path(_image_root).mkdir(parents=True, exist_ok=True)
-    path = os.path.join(_image_root, fig_id + "." + fig_extension)
-    print("Saving figure", fig_id)
-    if tight_layout:
-        plt.tight_layout()
-    plt.savefig(path, format=fig_extension, dpi=resolution)
+class DataSaver:
+    def __init__(self, root: str = _root_dir):
+        self._root_dir = None
+        self._image_root = None
+        self._csv_root = None
+        self._sklearn_root = None
+        self.refresh_report_data(root)
 
+    def refresh_report_data(self, root: str):
+        self._root_dir = "./analysisData/" + root
+        self._image_root = os.path.join(self._root_dir, "images")
+        self._csv_root = os.path.join(self._root_dir, "csv")
+        self._sklearn_root = os.path.join(self._root_dir, "sklearn")
+        Path(self._image_root).mkdir(parents=True, exist_ok=True)
+        Path(self._csv_root).mkdir(parents=True, exist_ok=True)
+        Path(self._sklearn_root).mkdir(parents=True, exist_ok=True)
 
-def save_csv(data: pd.DataFrame, name: str):
-    Path(_csv_root).mkdir(parents=True, exist_ok=True)
-    path = os.path.join(_csv_root, name + "." + "csv")
-    print("Saving scv:", path)
-    data.to_csv(path, encoding='utf-8-sig')
+    def save_fig(self, fig_id, tight_layout=True, fig_extension="png", resolution=800):
+        path = os.path.join(self._image_root, fig_id + "." + fig_extension)
+        print("Saving figure", fig_id)
+        if tight_layout:
+            plt.tight_layout()
+        plt.savefig(path, format=fig_extension, dpi=resolution)
+
+    def save_csv(self, data: pd.DataFrame, name: str):
+        path = os.path.join(self._csv_root, name + "." + "csv")
+        print("Saving scv:", path)
+        data.to_csv(path, encoding='utf-8-sig')
+
+    def save_sklearn_model(self, model, name: str):
+        path = os.path.join(self._sklearn_root, name + "." + "pkl")
+        print("Saving sklearn model:", path)
+        joblib.dump(model, path)
+
+    def load_sklearn_model(self, name: str) -> BaseEstimator:
+        """
+        load model file
+        :param name: model file name
+        :return: None if not exist
+        """
+        path = os.path.join(self._sklearn_root, name + "." + "pkl")
+
+        if not os.path.exists(path):
+            return None
+        return joblib.load(path)
